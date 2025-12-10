@@ -48,3 +48,33 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+
+
+```plaintext
+client-transport-agent/
+├── app/                          # ROOT DIRECTORY FOR EXPO-ROUTER (MANDATORY)
+│   ├── (auth)/                   # Grouping: Handles login/registration flow
+│   │   ├── index.tsx             # -> /login (Loads component from src/features/auth/)
+│   │   └── sign-up.tsx
+│   │
+│   ├── (main)/                   # Grouping: The main application screens
+│   │   ├── _layout.tsx           # Defines the main bottom tabs UI
+│   │   ├── index.tsx             # -> / (Loads component from src/screens/HomeScreen.tsx)
+│   │   ├── harvesting.tsx        # -> /harvesting (Loads form from src/features/harvesting/)
+│   │   └── trip-start.tsx        # -> /trip-start (Loads trip UI from src/features/transport/)
+│   │
+│   └── _layout.tsx               # Root layout (handles Authentication stack switch)
+│
+├──                               # Application source code (All business logic and modularity)
+│   ├── api/
+│   ├── blockchain/
+│   ├── components/
+│   ├── database/
+│   ├── features/                 # ALL the heavy lifting (Forms, Sync Logic, State) remains here.
+│   │   ├── auth/                 # Auth logic, but the screen component moved to app/(auth)
+│   │   ├── harvesting/
+│   │   ├── transport/
+│   │   └── sync/
+│   ├── hooks/
+│   └── store/                    # Zuztand store for state management
