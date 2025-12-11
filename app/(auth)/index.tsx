@@ -10,7 +10,7 @@ export default function LoginScreen() {
 
   // Redirect if already logged in
   if (isLoggedIn) {
-    return <Redirect href="/" />;
+    return <Redirect href="/(main)" />;
   }
 
   return (

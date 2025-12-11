@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { Tabs, useNavigation } from 'expo-router';
@@ -12,12 +13,20 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerTitleAlign: 'center',
+        headerStyle:{ backgroundColor: Colors.surface },
+        headerTintColor: Colors.textPrimary,
         headerLeft: () => (
           <TouchableOpacity onPress={toggleDrawer} style={{ marginLeft: 16 }}>
-            <Ionicons name="menu" size={28} color="black" />
+            <Ionicons name="menu" size={28} color={Colors.textPrimary} />
           </TouchableOpacity>
         ),
-        tabBarActiveTintColor: "#007AFF",
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.textSecondary,
+        tabBarStyle: {
+          backgroundColor: Colors.surface,
+          borderTopColor: Colors.border,
+        }
       }}
     >
       <Tabs.Screen
