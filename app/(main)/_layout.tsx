@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Drawer } from "expo-router/drawer";
+import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function DrawerLayout() {
@@ -11,6 +12,11 @@ export default function DrawerLayout() {
       <Drawer
         screenOptions={{
           headerShown: false,
+
+          headerTitleAlign: "center",
+
+          headerRight: () => <View style={{ width: 50, marginRight: 16 }} />,
+
           drawerActiveTintColor: Colors.primary,
           drawerActiveBackgroundColor: Colors.drawerActiveBackground,
           drawerInactiveTintColor: Colors.textSecondary,

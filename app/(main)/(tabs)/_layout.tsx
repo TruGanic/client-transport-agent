@@ -2,7 +2,7 @@ import { Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { Tabs, useNavigation } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 
 export default function TabLayout() {
   const navigation = useNavigation();
@@ -16,10 +16,14 @@ export default function TabLayout() {
         headerTitleAlign: 'center',
         headerStyle:{ backgroundColor: Colors.surface },
         headerTintColor: Colors.textPrimary,
+
         headerLeft: () => (
           <TouchableOpacity onPress={toggleDrawer} style={{ marginLeft: 16 }}>
             <Ionicons name="menu" size={28} color={Colors.textPrimary} />
           </TouchableOpacity>
+        ),
+        headerRight: () => (
+           <View style={{ marginRight: 16, width: 28 }} />
         ),
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textSecondary,
