@@ -77,4 +77,4 @@ client-transport-agent/
 │   │   ├── transport/
 │   │   └── sync/
 │   ├── hooks/
-│   └── store/                    # Zuztand store for state management
+│   └── store/                    # Zustand store for state management
