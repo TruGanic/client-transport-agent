@@ -3,12 +3,14 @@ import { create } from 'zustand';
 interface TripState {
   // State
   isRecording: boolean;
+  connectionStatus: string;
   currentBuffer: number[];
   batchStartTime: number | null; // Track when the current batch started
   logs: string[];
 
   // Actions (State setters only)
   setRecording: (status: boolean) => void;
+  setConnectionStatus: (status: string) => void;
   addToBuffer: (val: number) => void;
   resetBuffer: () => void;
   addLog: (message: string) => void;
@@ -17,6 +19,7 @@ interface TripState {
 
 export const useTripStore = create<TripState>((set) => ({
   isRecording: false,
+  connectionStatus: "Idle",
   currentBuffer: [],
   batchStartTime: null,
   logs: [],
@@ -26,6 +29,8 @@ export const useTripStore = create<TripState>((set) => ({
     // If starting, set start time. If stopping, clear it.
     batchStartTime: status ? Date.now() : null 
   }),
+  // New Action to update status globally
+  setConnectionStatus: (status) => set({ connectionStatus: status }),
 
   addToBuffer: (val) => set((state) => ({ 
     currentBuffer: [...state.currentBuffer, val] 
