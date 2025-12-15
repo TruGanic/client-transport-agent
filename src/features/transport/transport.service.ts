@@ -1,42 +1,43 @@
-import { db } from '../../database/client';
-import { sensorBatches } from '../../database/schema';
-
-// Configuration
-const BATCH_SIZE = 10; // For demo purposes
+import { db } from "../../database/client";
+import { sensorBatches } from "../../database/schema";
+import { BLE_CONFIG, ProcessBatchResult } from "../../types/transport.types";
 
 export const TransportService = {
   /**
+   * Helper to determine if buffer is full
+   */
+  shouldProcessBatch: (bufferLength: number): boolean => {
+    return bufferLength >= BLE_CONFIG.BATCH_SIZE;
+  },
+
+  /**
    * Calculates average and saves to local SQLite
    */
-  processBatch: async (buffer: number[], startTime: number) => {
-    if (buffer.length === 0) return null;
+  processBatch: async (
+    buffer: number[],
+    startTime: number
+  ): Promise<ProcessBatchResult> => {
+    if (buffer.length === 0) return { success: false, error: "Empty buffer" };
 
     // 1. Math Logic (Averaging)
     const sum = buffer.reduce((a, b) => a + b, 0);
     const avgValue = sum / buffer.length;
     const endTime = Date.now();
 
-    // 2. Database Logic (Drizzle ORM)
+    // 2. Database Logic
     try {
       await db.insert(sensorBatches).values({
-        startTime: startTime,
-        endTime: endTime,
-        avgValue: avgValue,
-        batchHash: null, // We will generate this in the Merkle Step later
-        isSynced: 0
+        startTime,
+        endTime,
+        avgValue,
+        batchHash: null,
+        isSynced: 0,
       });
 
       return { success: true, avg: avgValue };
     } catch (error) {
-      console.error("Failed to save batch:", error);
+      console.error("[TransportService] Failed to save batch:", error);
       return { success: false, error };
     }
   },
-
-  /**
-   * Helper to determine if buffer is full
-   */
-  shouldProcessBatch: (bufferLength: number) => {
-    return bufferLength >= BATCH_SIZE;
-  }
 };
