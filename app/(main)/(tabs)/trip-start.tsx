@@ -1,12 +1,12 @@
-import { Colors } from "@/constants/theme";
-import { useTripManager } from "@/hooks/useTripManager";
 import { useEffect, useRef } from "react";
 import { Button, FlatList, StyleSheet, Text, View } from "react-native";
 import { BleManager, Device, Subscription } from "react-native-ble-plx";
-// Init BLE Manager Once
+import { Colors } from "../../../constants/theme";
+import { useTripManager } from "../../../hooks/useTripManager";
+
+// Initialize once
 const bleManager = new BleManager();
 
-// ⚠️ YOUR SIMULATOR UUIDS (Copy exactly from your Node.js script)
 const SERVICE_UUID = "A07498CA-AD5B-474E-940D-16F1FBE7E8CD";
 const CHAR_UUID = "51FF12BB-3ED8-46E5-B4F9-D64E2FEC021B";
 const TARGET_DEVICE_NAME = 'LogisticsSim';
@@ -22,18 +22,21 @@ export default function TripStart() {
     handleIncomingData 
   } = useTripManager();
 
-  // Keep track of the active device/sub to clean up properly
   const deviceRef = useRef<Device | null>(null);
   const subscriptionRef = useRef<Subscription | null>(null);
 
   useEffect(() => {
     const scanAndConnect = () => {
+      // Avoid restarting scan if already connected
+      if (connectionStatus.includes("Receiving")) return;
+
       setConnectionStatus("Scanning...");
       
       bleManager.startDeviceScan(null, null, (error, device) => {
         if (error) {
-          console.error("Scan Error:", error);
-          setConnectionStatus("Scan Error");
+          // Handle Bluetooth being off gracefully
+          console.log("Scan Error:", error.message);
+          setConnectionStatus("Scan Error (Check BLE)");
           return;
         }
 
@@ -43,7 +46,7 @@ export default function TripStart() {
           
           device.connect()
             .then((connectedDevice) => {
-              deviceRef.current = connectedDevice; // Save reference
+              deviceRef.current = connectedDevice;
               return connectedDevice.discoverAllServicesAndCharacteristics();
             })
             .then((connectedDevice) => {
@@ -53,56 +56,58 @@ export default function TripStart() {
                 SERVICE_UUID,
                 CHAR_UUID,
                 (error, characteristic) => {
+                  // CRASH FIX: Check if we are still recording before processing
+                  // This prevents updates after "Stop" is pressed
                   if (error) {
-                    console.log("Subscription Error (Expected if stopped):", error.message);
-                    return;
+                     // This error is normal when we cancel connection
+                     return;
                   }
                   if (characteristic?.value) {
                     handleIncomingData(characteristic.value);
                   }
                 }
               );
-              subscriptionRef.current = sub; // Save reference
+              subscriptionRef.current = sub;
             })
             .catch((err) => {
-              console.error("Connection Failed", err);
-              setConnectionStatus("Connection Failed 🔴");
-              // Don't call stopTrip() here automatically to avoid infinite loops
+              console.log("Connection Failed:", err.message);
+              setConnectionStatus("Connection Lost 🔴");
+              // Do NOT call stopTrip() here, simply let it retry or stay in error state
             });
         }
       });
     };
 
-    // LOGIC:
-    // If we are recording, but the status is NOT "Receiving Data" (e.g., we just switched tabs),
-    // we should try to reconnect.
+    // 1. If Recording is ON, start the logic
     if (isRecording) {
-        scanAndConnect();
+      scanAndConnect();
     }
 
-    // CLEANUP FUNCTION (Runs on Tab Switch or Stop)
+    // 2. CLEANUP (Runs when 'isRecording' becomes false OR tab closes)
     return () => {
-      console.log("Cleaning up BLE...");
+      console.log("🛑 Cleanup Triggered");
       bleManager.stopDeviceScan();
       
+      // Remove subscription first to stop data flow
       if (subscriptionRef.current) {
         subscriptionRef.current.remove();
         subscriptionRef.current = null;
       }
 
+      // Cancel connection safely
       if (deviceRef.current) {
-        // Optional: Cancel connection on tab switch? 
-        // For research apps, usually yes, to save battery.
-        deviceRef.current.cancelConnection().catch(() => {});
-        deviceRef.current = null;
+        const deviceToDisconnect = deviceRef.current;
+        deviceRef.current = null; // Clear ref immediately so UI knows it's gone
+        
+        deviceToDisconnect.cancelConnection()
+            .then(() => console.log("Disconnected successfully"))
+            .catch((err) => console.log("Disconnect ignored:", err.message));
       }
     };
   }, [isRecording]); 
-  // ^ Depend only on isRecording. This ensures it runs when you toggle Start/Stop.
 
   return (
     <View style={styles.container}>
-      {/* CARD UI */}
       <View style={styles.card}>
         <Text style={styles.header}>Trip Status</Text>
         <Text style={{ 

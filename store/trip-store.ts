@@ -1,14 +1,14 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface TripState {
-  // State
   isRecording: boolean;
   connectionStatus: string;
   currentBuffer: number[];
-  batchStartTime: number | null; // Track when the current batch started
+  batchStartTime: number | null;
   logs: string[];
 
-  // Actions (State setters only)
   setRecording: (status: boolean) => void;
   setConnectionStatus: (status: string) => void;
   addToBuffer: (val: number) => void;
@@ -17,33 +17,48 @@ interface TripState {
   clearLogs: () => void;
 }
 
-export const useTripStore = create<TripState>((set) => ({
-  isRecording: false,
-  connectionStatus: "Idle",
-  currentBuffer: [],
-  batchStartTime: null,
-  logs: [],
+export const useTripStore = create<TripState>()(
+  persist(
+    (set) => ({
+      isRecording: false,
+      connectionStatus: "Idle",
+      currentBuffer: [],
+      batchStartTime: null,
+      logs: [],
 
-  setRecording: (status) => set({ 
-    isRecording: status, 
-    // If starting, set start time. If stopping, clear it.
-    batchStartTime: status ? Date.now() : null 
-  }),
-  // New Action to update status globally
-  setConnectionStatus: (status) => set({ connectionStatus: status }),
+      setRecording: (status) => set({ 
+        isRecording: status, 
+        batchStartTime: status ? Date.now() : null 
+      }),
+      
+      setConnectionStatus: (status) => set({ connectionStatus: status }),
 
-  addToBuffer: (val) => set((state) => ({ 
-    currentBuffer: [...state.currentBuffer, val] 
-  })),
+      addToBuffer: (val) => set((state) => ({ 
+        currentBuffer: [...state.currentBuffer, val] 
+      })),
 
-  resetBuffer: () => set({ 
-    currentBuffer: [], 
-    batchStartTime: Date.now() // Reset timer for next batch
-  }),
+      resetBuffer: () => set({ 
+        currentBuffer: [], 
+        batchStartTime: Date.now() 
+      }),
 
-  addLog: (msg) => set((state) => ({ 
-    logs: [`[${new Date().toLocaleTimeString()}] ${msg}`, ...state.logs].slice(0, 10) 
-  })),
+      addLog: (msg) => set((state) => ({ 
+        logs: [`[${new Date().toLocaleTimeString()}] ${msg}`, ...state.logs].slice(0, 10) 
+      })),
 
-  clearLogs: () => set({ logs: [] })
-}));
+      clearLogs: () => set({ logs: [] })
+    }),
+    {
+      name: 'trip-storage', // Unique name for storage
+      storage: createJSONStorage(() => AsyncStorage),
+      // ⚠️ CRITICAL: Only save these fields. DO NOT save 'connectionStatus' 
+      // because when you restart, you are disconnected by definition.
+      partialize: (state) => ({ 
+        isRecording: state.isRecording,
+        currentBuffer: state.currentBuffer,
+        batchStartTime: state.batchStartTime,
+        logs: state.logs 
+      }),
+    }
+  )
+);

@@ -1,6 +1,16 @@
 // app/_layout.tsx
+import { expoDb, initDatabase } from "@/database/client";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { Slot } from "expo-router";
+import { useEffect } from "react";
+
+
 
 export default function RootLayout() {
+  useEffect(() => {
+    initDatabase(); // Create tables on app launch
+  }, []);
+
+  useDrizzleStudio(expoDb);
   return <Slot />;
 }
