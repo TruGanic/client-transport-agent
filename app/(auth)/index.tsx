@@ -1,7 +1,7 @@
 import { Redirect, useRouter } from "expo-router";
 import React from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { useAuthStore } from "../../store/auth-store";
+import { useAuthStore } from "../../src/store/auth-store";
 
 export default function LoginScreen() {
   const router = useRouter();

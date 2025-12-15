@@ -1,5 +1,5 @@
 // app/_layout.tsx
-import { expoDb, initDatabase } from "@/database/client";
+import { expoDb, initDatabase } from "@/src/database/client";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { Slot } from "expo-router";
 import { useEffect } from "react";

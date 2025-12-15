@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { Button, Text, View } from "react-native";
-import { useAuthStore } from "../../store/auth-store";
+import { useAuthStore } from "../../src/store/auth-store";
 
 export default function SignInScreen() {
   const { login } = useAuthStore();

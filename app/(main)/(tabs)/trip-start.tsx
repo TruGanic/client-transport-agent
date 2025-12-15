@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Button, FlatList, StyleSheet, Text, View } from "react-native";
 import { BleManager, Device, Subscription } from "react-native-ble-plx";
-import { Colors } from "../../../constants/theme";
-import { useTripManager } from "../../../hooks/useTripManager";
+import { Colors } from "../../../src/constants/theme";
+import { useTripManager } from "../../../src/hooks/useTripManager";
 
 // Initialize once
 const bleManager = new BleManager();

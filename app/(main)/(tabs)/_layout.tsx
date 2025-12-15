@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/theme';
+import { Colors } from '@/src/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { Tabs, useNavigation } from 'expo-router';

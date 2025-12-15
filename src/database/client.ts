@@ -7,8 +7,7 @@ export const db = drizzle(expoDb, { schema });
 
 export const initDatabase = () => {
   try {
-    // We execute a raw SQL command to create the table manually
-    // This matches the schema definition in schema.ts
+    
     expoDb.execSync(`
       CREATE TABLE IF NOT EXISTS sensor_batches (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

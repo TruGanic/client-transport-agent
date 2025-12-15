@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/theme";
+import { Colors } from "@/src/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Drawer } from "expo-router/drawer";
 import { View } from "react-native";
