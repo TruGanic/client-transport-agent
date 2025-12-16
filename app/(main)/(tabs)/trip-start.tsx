@@ -1,6 +1,7 @@
 import { Colors } from "@/src/constants/theme";
+import { ConnectionStatus } from "@/src/enums/connectionStatus.enum";
 import { useTripManager } from "@/src/hooks/useTripManager";
-import { ConnectionStatus } from "@/src/types/transport.types";
+
 import React from "react";
 import { Button, FlatList, StyleSheet, Text, View } from "react-native";
 
