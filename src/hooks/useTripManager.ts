@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
+import { ConnectionStatus } from "../enums/connectionStatus.enum";
 import { TransportService } from "../features/transport/transport.service";
 import { useTripStore } from "../store/trip-store";
-import { ConnectionStatus } from "../types/transport.types";
 import { useBleSession } from "./useBleSession";
 
 export const useTripManager = () => {

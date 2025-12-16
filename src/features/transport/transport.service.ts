@@ -1,6 +1,9 @@
+import { BLE_CONFIG } from "@/src/constants/ble-config";
+import { IProcessBatchResult } from "@/src/interfaces/IProcessBatchResult";
 import { db } from "../../database/client";
 import { sensorBatches } from "../../database/schema";
-import { BLE_CONFIG, ProcessBatchResult } from "../../types/transport.types";
+
+
 
 export const TransportService = {
   /**
@@ -16,7 +19,7 @@ export const TransportService = {
   processBatch: async (
     buffer: number[],
     startTime: number
-  ): Promise<ProcessBatchResult> => {
+  ): Promise<IProcessBatchResult> => {
     if (buffer.length === 0) return { success: false, error: "Empty buffer" };
 
     // 1. Math Logic (Averaging)
@@ -25,7 +28,7 @@ export const TransportService = {
     const endTime = Date.now();
 
     // 2. Database Logic
-    try {
+    try { 
       await db.insert(sensorBatches).values({
         startTime,
         endTime,

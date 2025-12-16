@@ -1,24 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { ConnectionStatus } from "../types/transport.types";
+import { ConnectionStatus } from "../enums/connectionStatus.enum";
+import { ITripState } from "../interfaces/ITripState";
 
-interface TripState {
-  isRecording: boolean;
-  connectionStatus: ConnectionStatus;
-  currentBuffer: number[];
-  batchStartTime: number | null;
-  logs: string[];
 
-  setRecording: (status: boolean) => void;
-  setConnectionStatus: (status: string) => void;
-  addToBuffer: (val: number) => void;
-  resetBuffer: () => void;
-  addLog: (message: string) => void;
-  clearLogs: () => void;
-}
-
-export const useTripStore = create<TripState>()(
+export const useTripStore = create<ITripState>()(
   persist(
     (set) => ({
       isRecording: false,

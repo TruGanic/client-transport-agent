@@ -1,21 +1,17 @@
 import { useEffect, useRef } from "react";
 import { BleManager, Device, Subscription } from "react-native-ble-plx";
-import { BLE_CONFIG, ConnectionStatus } from "../types/transport.types";
+import { BLE_CONFIG } from "../constants/ble-config";
+import { ConnectionStatus } from "../enums/connectionStatus.enum";
+import { IBleSessionProps } from "../interfaces/IBleSessionProps";
 
 // Initialize Singleton outside component
 const bleManager = new BleManager();
-
-interface BleSessionProps {
-  isRecording: boolean;
-  onDataReceived: (base64Data: string) => void;
-  onStatusChange: (status: ConnectionStatus) => void;
-}
 
 export const useBleSession = ({
   isRecording,
   onDataReceived,
   onStatusChange,
-}: BleSessionProps) => {
+}: IBleSessionProps) => {
   const deviceRef = useRef<Device | null>(null);
   const subscriptionRef = useRef<Subscription | null>(null);
 
