@@ -3,7 +3,7 @@ import { expoDb, initDatabase } from "@/src/database/client";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { Slot } from "expo-router";
 import { useEffect } from "react";
-
+import "../global.css";
 
 
 export default function RootLayout() {
