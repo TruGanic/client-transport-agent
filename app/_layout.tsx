@@ -1,16 +1,28 @@
-// app/_layout.tsx
-import { expoDb, initDatabase } from "@/src/database/client";
+import migrations from "@/drizzle/migrations";
+import { db, expoDbClient } from "@/src/database/client";
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { Slot } from "expo-router";
-import { useEffect } from "react";
-
-
+import { Text, View } from "react-native";
+import "../global.css";
 
 export default function RootLayout() {
-  useEffect(() => {
-    initDatabase(); // Create tables on app launch
-  }, []);
+  
+  useDrizzleStudio(expoDbClient);
+  const { success, error } = useMigrations(db, migrations);
 
-  useDrizzleStudio(expoDb);
+  if (error) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: 'red' }}>Migration Error: {error.message}</Text>
+      </View>
+    );
+  }
+
+  // Show nothing (or a splash screen) while database is setting up
+  if (!success) {
+    return null; 
+  }
+
   return <Slot />;
 }
