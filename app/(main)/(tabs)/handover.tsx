@@ -49,7 +49,7 @@ export default function HandoverScreen() {
                             </View>
                         ) : (
                             <View className="flex-row items-center mb-6">
-                                <View className="w-3 h-3 bg-blue-500 rounded-full mr-2" />
+                                <View className="w-3 h-3 bg-blue-500 rounded-full mr-2 animate-none" />
                                 <Text className="text-blue-600 font-bold">READY TO UNLOAD</Text>
                             </View>
                         )}

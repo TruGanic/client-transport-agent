@@ -37,7 +37,7 @@ export default function MainHome() {
 
         {/* Status Pill */}
         <View className={`self-start px-3 py-1 rounded-full flex-row items-center ${statusBg}`}>
-          <View className={`w-2 h-2 rounded-full mr-2 ${isRecording ? 'bg-green-600 animate-pulse' : 'bg-gray-400'}`} />
+          <View className={`w-2 h-2 rounded-full mr-2 ${isRecording ? 'bg-green-600 animate-pulse' : 'bg-gray-400 animate-none'}`} />
           <Text className={`text-xs font-semibold ${statusColor}`}>{statusLabel}</Text>
         </View>
       </View>
