@@ -14,7 +14,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerTitleAlign: 'center',
-        headerStyle:{ backgroundColor: Colors.surface },
+        headerStyle: { backgroundColor: Colors.surface },
         headerTintColor: Colors.textPrimary,
 
         headerLeft: () => (
@@ -23,7 +23,7 @@ export default function TabLayout() {
           </TouchableOpacity>
         ),
         headerRight: () => (
-           <View style={{ marginRight: 16, width: 28 }} />
+          <View style={{ marginRight: 16, width: 28 }} />
         ),
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textSecondary,
@@ -52,6 +52,13 @@ export default function TabLayout() {
         options={{
           title: "Current Trip",
           tabBarIcon: ({ color }) => <Ionicons name="navigate" size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="handover"
+        options={{
+          title: "Handover",
+          tabBarIcon: ({ color }) => <Ionicons name="cube" size={24} color={color} />,
         }}
       />
     </Tabs>
