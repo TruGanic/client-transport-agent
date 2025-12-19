@@ -1,29 +1,28 @@
+import CustomDrawerContent from "@/src/components/CustomDrawerContent";
 import { Colors } from "@/src/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Drawer } from "expo-router/drawer";
-import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function DrawerLayout() {
   return (
-    <GestureHandlerRootView
-      style={{ flex: 1, backgroundColor: Colors.primaryDark }}
-    >
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
           headerShown: false,
-
           headerTitleAlign: "center",
+          headerTintColor: Colors.textPrimary,
+          headerStyle: { backgroundColor: Colors.surface, shadowOpacity: 0, elevation: 0 },
 
-          headerRight: () => <View style={{ width: 50, marginRight: 16 }} />,
-
-          drawerActiveTintColor: Colors.primary,
-          drawerActiveBackgroundColor: Colors.drawerActiveBackground,
+          drawerActiveTintColor: Colors.surface,
+          drawerActiveBackgroundColor: Colors.primary,
           drawerInactiveTintColor: Colors.textSecondary,
+
+          drawerItemStyle: { borderRadius: 12, marginVertical: 4, paddingHorizontal: 4 },
+          drawerLabelStyle: { marginLeft: -10, fontWeight: "600" },
+
           drawerType: "front",
-          drawerLabelStyle: {
-            fontWeight: "600",
-          },
         }}
       >
         {/* 1. The Main Tabs */}
@@ -32,7 +31,7 @@ export default function DrawerLayout() {
           options={{
             drawerLabel: "Dashboard",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="speedometer-outline" size={size} color={color} />
+              <Ionicons name="speedometer-outline" size={22} color={color} />
             ),
           }}
         />
@@ -45,7 +44,7 @@ export default function DrawerLayout() {
             title: "Past Trips",
             headerShown: true,
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="list-outline" size={size} color={color} />
+              <Ionicons name="time-outline" size={22} color={color} />
             ),
           }}
         />
@@ -54,11 +53,11 @@ export default function DrawerLayout() {
         <Drawer.Screen
           name="sync-status"
           options={{
-            drawerLabel: "Sync Status (Merkle)",
-            title: "Data Synchronization",
+            drawerLabel: "Data Sync",
+            title: "Synchronization",
             headerShown: true,
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="cloud-upload-outline" size={size} color={color} />
+              <Ionicons name="cloud-upload-outline" size={22} color={color} />
             ),
           }}
         />
@@ -71,7 +70,7 @@ export default function DrawerLayout() {
             title: "App Settings",
             headerShown: true,
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="settings-outline" size={size} color={color} />
+              <Ionicons name="settings-outline" size={22} color={color} />
             ),
           }}
         />
