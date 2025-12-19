@@ -70,6 +70,7 @@ export const useTripManager = () => {
   return {
     isRecording,
     connectionStatus,
+    currentBuffer: useTripStore((s) => s.currentBuffer),
     logs: useTripStore((s) => s.logs),
     startTrip: () => {
       clearLogs();
