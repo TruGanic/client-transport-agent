@@ -5,7 +5,8 @@ export const sensorBatches = sqliteTable('sensor_batches',{
     batchHash:text('batch_hash'),
     startTime:integer('start_time'),
     endTime:integer('end_time'),
-    avgValue:real('avg_value'),
+    avgTemp:real('avg_temp'),
+    avgHumidity:real('avg_humidity'),
     isSynced:integer('is_synced').default(0)
 })
 

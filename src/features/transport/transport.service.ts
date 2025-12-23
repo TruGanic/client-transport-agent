@@ -17,14 +17,19 @@ export const TransportService = {
    * Calculates average and saves to local SQLite
    */
   processBatch: async (
-    buffer: number[],
+    tempBuffer: number[],
+    humidityBuffer: number[],
     startTime: number
   ): Promise<IProcessBatchResult> => {
-    if (buffer.length === 0) return { success: false, error: "Empty buffer" };
+    if (tempBuffer.length === 0) return { success: false, error: "Empty buffer" };
 
     // 1. Math Logic (Averaging)
-    const sum = buffer.reduce((a, b) => a + b, 0);
-    const avgValue = sum / buffer.length;
+    const sumTemp = tempBuffer.reduce((a, b) => a + b, 0);
+    const avgValue = sumTemp / tempBuffer.length;
+
+    const sumHum = humidityBuffer.length > 0 ? humidityBuffer.reduce((a, b) => a + b, 0) : 0;
+    const avgHumidity = humidityBuffer.length > 0 ? sumHum / humidityBuffer.length : 0;
+
     const endTime = Date.now();
 
     // 2. Database Logic
@@ -32,7 +37,8 @@ export const TransportService = {
       await db.insert(sensorBatches).values({
         startTime,
         endTime,
-        avgValue,
+        avgTemp: avgValue,
+        avgHumidity,
         batchHash: null,
         isSynced: 0,
       });

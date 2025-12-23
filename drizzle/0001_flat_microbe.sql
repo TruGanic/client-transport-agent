@@ -1,0 +1,1 @@
+ALTER TABLE `sensor_batches` ADD `avg_humidity` real;
