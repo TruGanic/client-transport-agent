@@ -1,4 +1,5 @@
 import CustomDrawerContent from "@/src/components/CustomDrawerContent";
+import TripController from "@/src/components/TripController";
 import { Colors } from "@/src/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Drawer } from "expo-router/drawer";
@@ -7,6 +8,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 export default function DrawerLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <TripController />
       <Drawer
         drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
