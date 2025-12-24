@@ -23,23 +23,29 @@ export default function TripController() {
 
             // Validation
             if (parts.length < 3) return;
+
             const temp = parseFloat(parts[1]);
-            if (isNaN(temp)) return;
+            const humidity = parseFloat(parts[2]); // Format: ID,TEMP,HUMIDITY
+
+            if (isNaN(temp) || isNaN(humidity)) return;
 
             // Update UI
-            console.log(`📡 BLE: ${temp}°C`);
-            state.addLog(`T: ${temp}°C`);
+            console.log(`📡 BLE: ${temp}°C | ${humidity}%`);
+            state.addLog(`T: ${temp}°C H: ${humidity}%`);
 
             // Add to Buffer & Check Batch
             const freshBuffer = state.currentBuffer;
-            state.addToBuffer(temp);
+            state.addToBuffer(temp, humidity);
 
             if (TransportService.shouldProcessBatch(freshBuffer.length + 1)) {
                 console.log("⚡ Batch Full. Processing...");
 
-                const fullBatch = [...freshBuffer, temp];
+                const fullTempBuffer = [...freshBuffer, temp];
+                const fullHumidityBuffer = [...(state.currentHumidityBuffer || []), humidity];
+
                 const result = await TransportService.processBatch(
-                    fullBatch,
+                    fullTempBuffer,
+                    fullHumidityBuffer,
                     state.batchStartTime || Date.now()
                 );
 

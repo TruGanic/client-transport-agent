@@ -11,6 +11,7 @@ export const useTripStore = create<ITripState>()(
       isRecording: false,
       connectionStatus: ConnectionStatus.IDLE,
       currentBuffer: [],
+      currentHumidityBuffer: [],
       batchStartTime: null,
       logs: [],
 
@@ -23,14 +24,16 @@ export const useTripStore = create<ITripState>()(
       setConnectionStatus: (status) =>
         set({ connectionStatus: status as ConnectionStatus }),
 
-      addToBuffer: (val) =>
+      addToBuffer: (temp, humidity) =>
         set((state) => ({
-          currentBuffer: [...state.currentBuffer, val],
+          currentBuffer: [...state.currentBuffer, temp],
+          currentHumidityBuffer: [...(state.currentHumidityBuffer || []), humidity],
         })),
 
       resetBuffer: () =>
         set({
           currentBuffer: [],
+          currentHumidityBuffer: [],
           batchStartTime: Date.now(),
         }),
 
@@ -52,6 +55,7 @@ export const useTripStore = create<ITripState>()(
       partialize: (state) => ({
         isRecording: state.isRecording,
         currentBuffer: state.currentBuffer,
+        currentHumidityBuffer: state.currentHumidityBuffer,
         batchStartTime: state.batchStartTime,
         logs: state.logs,
       }),

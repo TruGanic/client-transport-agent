@@ -17,6 +17,7 @@ export const useTripManager = () => {
     isRecording,
     connectionStatus,
     currentBuffer: useTripStore((s) => s.currentBuffer),
+    currentHumidityBuffer: useTripStore((s) => s.currentHumidityBuffer),
     logs: useTripStore((s) => s.logs),
     startTrip: () => {
       // Logic handled by TripController (watching isRecording)

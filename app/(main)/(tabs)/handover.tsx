@@ -5,8 +5,17 @@ import React, { useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function HandoverScreen() {
-    const { isRecording, stopTrip } = useTripManager();
+    const { isRecording, stopTrip, currentBuffer, currentHumidityBuffer } = useTripManager();
     const [step, setStep] = useState(1); // 1: Trip Active/Summary, 2: QR Scan, 3: Completed
+
+    // Calculate Averages
+    const avgTemp = currentBuffer.length > 0
+        ? (currentBuffer.reduce((a, b) => a + b, 0) / currentBuffer.length).toFixed(1)
+        : "4.1";
+
+    const avgHumidity = currentHumidityBuffer && currentHumidityBuffer.length > 0
+        ? (currentHumidityBuffer.reduce((a, b) => a + b, 0) / currentHumidityBuffer.length).toFixed(0)
+        : "--";
 
     const handleStopTrip = () => {
         stopTrip();
@@ -61,11 +70,11 @@ export default function HandoverScreen() {
                             </View>
                             <View>
                                 <Text className="text-gray-400 text-xs">Avg Temp</Text>
-                                <Text className="text-xl font-bold text-gray-800">4.1 <Text className="text-sm font-normal">°C</Text></Text>
+                                <Text className="text-xl font-bold text-gray-800">{avgTemp} <Text className="text-sm font-normal">°C</Text></Text>
                             </View>
                             <View>
-                                <Text className="text-gray-400 text-xs">Duration</Text>
-                                <Text className="text-xl font-bold text-gray-800">42 <Text className="text-sm font-normal">m</Text></Text>
+                                <Text className="text-gray-400 text-xs">Avg Humidity</Text>
+                                <Text className="text-xl font-bold text-gray-800">{avgHumidity} <Text className="text-sm font-normal">%</Text></Text>
                             </View>
                         </View>
 

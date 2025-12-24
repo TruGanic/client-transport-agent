@@ -6,11 +6,14 @@ import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function TripStart() {
-  const { isRecording, connectionStatus, currentBuffer, startTrip, stopTrip } =
+  const { isRecording, connectionStatus, currentBuffer, currentHumidityBuffer, startTrip, stopTrip } =
     useTripManager();
 
   // derived values
   const currentTemp = currentBuffer.length > 0 ? currentBuffer[currentBuffer.length - 1] : 0;
+  const currentHumidity = currentHumidityBuffer && currentHumidityBuffer.length > 0
+    ? currentHumidityBuffer[currentHumidityBuffer.length - 1]
+    : 0;
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -85,7 +88,7 @@ export default function TripStart() {
               <Text className="text-xs text-blue-700 font-bold">HUMIDITY</Text>
             </View>
             <Text className="text-3xl font-bold text-gray-800">
-              {isRecording ? '64' : '--'}
+              {isRecording && currentHumidity > 0 ? currentHumidity.toFixed(0) : '--'}
               <Text className="text-lg text-gray-400 font-normal">%</Text>
             </Text>
           </View>
