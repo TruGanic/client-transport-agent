@@ -1,12 +1,15 @@
 import { Colors } from "@/src/constants/theme";
 import { useTripManager } from "@/src/hooks/useTripManager";
+import { MerkleService } from "@/src/services/merkle.service";
+import { SyncService } from "@/src/services/sync.service";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function HandoverScreen() {
-    const { isRecording, stopTrip, currentBuffer, currentHumidityBuffer } = useTripManager();
+    const { isRecording, stopTrip, currentBuffer, currentHumidityBuffer, batchStartTime } = useTripManager();
     const [step, setStep] = useState(1); // 1: Trip Active/Summary, 2: QR Scan, 3: Completed
+    const [loading, setLoading] = useState(false);
 
     // Calculate Averages
     const avgTemp = currentBuffer.length > 0
@@ -22,10 +25,38 @@ export default function HandoverScreen() {
         setStep(2);
     };
 
-    const handleConfirmHandover = () => {
-        Alert.alert("Handover Successful", "Custody has been transferred to Central Depot.", [
-            { text: "OK", onPress: () => setStep(3) }
-        ]);
+    const handleConfirmHandover = async () => {
+        setLoading(true);
+        try {
+            // 1. Generate Merkle Proof & Stats
+            // In a real app, 'batchStartTime' comes from the store/DB. 
+            // We use a safe fallback here.
+            const start = batchStartTime || (Date.now() - 3600000);
+            const end = Date.now();
+
+            const proof = await MerkleService.generateTripProof(start, end);
+
+            // 2. Finalize Sync
+            // 'BATCH-KG-005' is hardcoded here matching the Pickup Input for demo flow.
+            // In real app, this ID comes from the current active trip state.
+            const result = await SyncService.finalizeTrip("BATCH-KG-005", proof);
+
+            if (result.synced) {
+                Alert.alert("Success", `Custody transferred! \nMerkle Root: ${proof.merkleRoot.substring(0, 10)}...`, [
+                    { text: "OK", onPress: () => setStep(3) }
+                ]);
+            } else {
+                Alert.alert("Offline Mode", `Trip Finalized locally. \nIntegrity Proof Generated. Sync queued.`, [
+                    { text: "OK", onPress: () => setStep(3) }
+                ]);
+            }
+
+        } catch (e) {
+            Alert.alert("Error", "Failed to finalize handover");
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleEndShift = () => {

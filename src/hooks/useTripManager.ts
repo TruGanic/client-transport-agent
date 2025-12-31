@@ -19,6 +19,7 @@ export const useTripManager = () => {
     currentBuffer: useTripStore((s) => s.currentBuffer),
     currentHumidityBuffer: useTripStore((s) => s.currentHumidityBuffer),
     logs: useTripStore((s) => s.logs),
+    batchStartTime: useTripStore((s) => s.batchStartTime),
     startTrip: () => {
       // Logic handled by TripController (watching isRecording)
       clearLogs();

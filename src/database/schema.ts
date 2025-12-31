@@ -20,12 +20,22 @@ export const harvestBatches = sqliteTable('harvest_batches', {
   produceType: text('produce_type').notNull(), // e.g., "Organic Avocados"
   
   // 2. Quantity & Origin
-  weightKg: real('weight_kg').notNull(), 
+  weightKg: real('weight_kg').notNull(),
   supplierId: text('supplier_id').notNull(), // The Farm/Source ID
-  
+  farmerName: text('farmer_name'), // NEW: For ConfirmPickup
+  pickupLocation: text('pickup_location'), // NEW: For ConfirmPickup
+
   // 3. Audit Metadata
   notes: text('notes'),
   recordedAt: integer('recorded_at').notNull(), // Timestamp
+  
+  // 4. Trip Stats (Aggregated at end of trip)
+  minTemp: real('min_temp'),
+  maxTemp: real('max_temp'),
+  avgTempAggregate: real('avg_temp_aggregate'),
+  
+  // 5. State Management
+  isTripCompleted: integer('is_trip_completed').default(0), // 0: No, 1: Yes
   
   // 4. Sync State (Critical for your offline flow)
   syncStatus: text('sync_status', { enum: ['PENDING', 'SYNCED', 'FAILED'] })

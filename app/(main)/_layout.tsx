@@ -1,14 +1,39 @@
 import CustomDrawerContent from "@/src/components/CustomDrawerContent";
+import SyncStatusIndicator from "@/src/components/SyncStatusIndicator";
 import TripController from "@/src/components/TripController";
 import { Colors } from "@/src/constants/theme";
+import { SyncService } from "@/src/services/sync.service";
+import { useSyncStore } from "@/src/store/sync-store";
 import { Ionicons } from "@expo/vector-icons";
+import NetInfo from "@react-native-community/netinfo";
 import { Drawer } from "expo-router/drawer";
+import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function DrawerLayout() {
+
+  // 1. Global Network Listener
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      const isOnline = !!state.isConnected && !!state.isInternetReachable;
+
+      // Update Store
+      useSyncStore.getState().setOnlineStatus(isOnline);
+
+      // Trigger Sync if back online
+      if (isOnline) {
+        console.log("⚡ [App] Detected Connection. Triggering Auto-Sync...");
+        SyncService.syncPendingData();
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <TripController />
+      <SyncStatusIndicator />
       <Drawer
         drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
