@@ -19,7 +19,9 @@ export const useTripManager = () => {
     currentBuffer: useTripStore((s) => s.currentBuffer),
     currentHumidityBuffer: useTripStore((s) => s.currentHumidityBuffer),
     logs: useTripStore((s) => s.logs),
+    activeBatchId: useTripStore((s) => s.activeBatchId),
     batchStartTime: useTripStore((s) => s.batchStartTime),
+    setActiveBatchId: useTripStore((s) => s.setActiveBatchId),
     startTrip: () => {
       // Logic handled by TripController (watching isRecording)
       clearLogs();
@@ -32,6 +34,7 @@ export const useTripManager = () => {
       setRecording(false);
       setConnectionStatus(ConnectionStatus.IDLE);
       addLog("Trip stopped.");
+      // Note: We don't clear activeBatchId here immediately, so we can use it in Handover
     },
   };
 };

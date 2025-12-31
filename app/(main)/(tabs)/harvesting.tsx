@@ -10,8 +10,11 @@ import { Colors } from '@/src/constants/theme';
 import { HarvestFormValues, harvestSchema } from '@/src/features/harvesting/schema';
 import { SyncService } from '@/src/services/sync.service';
 
+import { useTripManager } from '@/src/hooks/useTripManager'; // Import hook
+
 export default function HarvestingScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { setActiveBatchId } = useTripManager(); // Get setter
 
   // 1. Setup Form Controller
   const { control, handleSubmit, reset, formState: { errors } } = useForm<HarvestFormValues>({
@@ -51,6 +54,10 @@ export default function HarvestingScreen() {
       } else {
         Alert.alert("Saved Offline", `Batch ${batchCode} Saved Locally. Queued for sync. 💾`);
       }
+
+      // Update Global Store with Active Batch
+      setActiveBatchId(batchCode);
+      console.log(`✅ Active Batch Set: ${batchCode}`);
 
       reset(); // Clear form
 

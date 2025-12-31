@@ -172,6 +172,11 @@ export const SyncService = {
          const batch = await db.select().from(harvestBatches).where(eq(harvestBatches.batchId, batchId));
          const record = batch[0];
 
+         if (!record) {
+             console.error(`❌ [SyncService] Batch record not found for ID: ${batchId}`);
+             throw new Error(`Batch record not found for ID: ${batchId}`);
+         }
+
          if (record.syncStatus === 'PENDING') {
               console.log("⚠️ [SyncService] Found pending pickup. Syncing that first...");
               await API.confirmPickup({

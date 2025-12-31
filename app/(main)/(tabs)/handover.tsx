@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function HandoverScreen() {
-    const { isRecording, stopTrip, currentBuffer, currentHumidityBuffer, batchStartTime } = useTripManager();
+    const { isRecording, stopTrip, currentBuffer, currentHumidityBuffer, batchStartTime, activeBatchId, setActiveBatchId } = useTripManager();
     const [step, setStep] = useState(1); // 1: Trip Active/Summary, 2: QR Scan, 3: Completed
     const [loading, setLoading] = useState(false);
 
@@ -26,6 +26,11 @@ export default function HandoverScreen() {
     };
 
     const handleConfirmHandover = async () => {
+        if (!activeBatchId) {
+            Alert.alert("Error", "No active batch found found. Please start a pickup first.");
+            return;
+        }
+
         setLoading(true);
         try {
             // 1. Generate Merkle Proof & Stats
@@ -37,17 +42,26 @@ export default function HandoverScreen() {
             const proof = await MerkleService.generateTripProof(start, end);
 
             // 2. Finalize Sync
-            // 'BATCH-KG-005' is hardcoded here matching the Pickup Input for demo flow.
-            // In real app, this ID comes from the current active trip state.
-            const result = await SyncService.finalizeTrip("BATCH-KG-005", proof);
+            console.log(`🔄 Finalizing Trip for Batch: ${activeBatchId}`);
+            const result = await SyncService.finalizeTrip(activeBatchId, proof);
 
             if (result.synced) {
                 Alert.alert("Success", `Custody transferred! \nMerkle Root: ${proof.merkleRoot.substring(0, 10)}...`, [
-                    { text: "OK", onPress: () => setStep(3) }
+                    {
+                        text: "OK", onPress: () => {
+                            setStep(3);
+                            setActiveBatchId(null); // Clear active batch
+                        }
+                    }
                 ]);
             } else {
                 Alert.alert("Offline Mode", `Trip Finalized locally. \nIntegrity Proof Generated. Sync queued.`, [
-                    { text: "OK", onPress: () => setStep(3) }
+                    {
+                        text: "OK", onPress: () => {
+                            setStep(3);
+                            setActiveBatchId(null); // Clear active batch
+                        }
+                    }
                 ]);
             }
 

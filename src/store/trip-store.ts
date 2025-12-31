@@ -9,6 +9,7 @@ export const useTripStore = create<ITripState>()(
   persist(
     (set) => ({
       isRecording: false,
+      activeBatchId: null,
       connectionStatus: ConnectionStatus.IDLE,
       currentBuffer: [],
       currentHumidityBuffer: [],
@@ -20,6 +21,8 @@ export const useTripStore = create<ITripState>()(
           isRecording: status,
           batchStartTime: status ? Date.now() : null,
         }),
+
+      setActiveBatchId: (id) => set({ activeBatchId: id }),
 
       setConnectionStatus: (status) =>
         set({ connectionStatus: status as ConnectionStatus }),
@@ -54,6 +57,7 @@ export const useTripStore = create<ITripState>()(
       // because when restart, disconnected by definition.
       partialize: (state) => ({
         isRecording: state.isRecording,
+        activeBatchId: state.activeBatchId,
         currentBuffer: state.currentBuffer,
         currentHumidityBuffer: state.currentHumidityBuffer,
         batchStartTime: state.batchStartTime,
