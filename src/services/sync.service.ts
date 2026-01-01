@@ -54,9 +54,12 @@ export const SyncService = {
                   // Full Trip Sync
                    await API.completeTrip({
                        batchId: batch.batchId,
-                       min: batch.minTemp,
-                       max: batch.maxTemp,
-                       avg: batch.avgTempAggregate,
+                       minTemp: batch.minTemp,
+                       maxTemp: batch.maxTemp,
+                       avgTemp: batch.avgTempAggregate,
+                       minHumidity: batch.minHumidity,
+                       maxHumidity: batch.maxHumidity,
+                       avgHumidity: batch.avgHumidityAggregate,
                        merkleRoot: batch.merkleRoot
                    });
               } else {
@@ -151,6 +154,9 @@ export const SyncService = {
             minTemp: stats.minTemp,
             maxTemp: stats.maxTemp,
             avgTempAggregate: stats.avgTemp,
+            minHumidity: stats.minHumidity,
+            maxHumidity: stats.maxHumidity,
+            avgHumidityAggregate: stats.avgHumidity,
             merkleRoot: stats.merkleRoot,
             isTripCompleted: 1,
             // Keep status pending until confirmed below
@@ -192,9 +198,12 @@ export const SyncService = {
          // B. Sync Complete Trip
          await API.completeTrip({
              batchId,
-             min: stats.minTemp,
-             max: stats.maxTemp,
-             avg: stats.avgTemp,
+             minTemp: stats.minTemp,
+             maxTemp: stats.maxTemp,
+             avgTemp: stats.avgTemp,
+             minHumidity: stats.minHumidity,
+             maxHumidity: stats.maxHumidity,
+             avgHumidity: stats.avgHumidity,
              merkleRoot: stats.merkleRoot
          });
 

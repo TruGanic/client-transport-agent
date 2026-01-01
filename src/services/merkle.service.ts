@@ -9,6 +9,9 @@ interface ITripStats {
   minTemp: number;
   maxTemp: number;
   avgTemp: number;
+  minHumidity: number;
+  maxHumidity: number;
+  avgHumidity: number;
 }
 
 export const MerkleService = {
@@ -38,6 +41,9 @@ export const MerkleService = {
         minTemp: 0,
         maxTemp: 0,
         avgTemp: 0,
+        minHumidity: 0,
+        maxHumidity: 0,
+        avgHumidity: 0,
       };
     }
 
@@ -45,6 +51,11 @@ export const MerkleService = {
     let minTemp = Number.MAX_VALUE;
     let maxTemp = Number.MIN_VALUE;
     let sumTemp = 0;
+    
+    let minHumidity = Number.MAX_VALUE;
+    let maxHumidity = Number.MIN_VALUE;
+    let sumHumidity = 0;
+    
     let count = 0;
 
     // 3. Prepare Leaves for Merkle Tree
@@ -55,8 +66,16 @@ export const MerkleService = {
           if (val < minTemp) minTemp = val;
           if (val > maxTemp) maxTemp = val;
           sumTemp += val;
-          count++;
       }
+      
+      if (batch.avgHumidity !== null) {
+          const val = batch.avgHumidity;
+          if (val < minHumidity) minHumidity = val;
+          if (val > maxHumidity) maxHumidity = val;
+          sumHumidity += val;
+      }
+      
+      count++; // Assuming every batch has valid data for simplicity or count individually if needed
 
       // Hash Logic: Create a deterministic string from the batch data
       // Structure: "START_TIME|END_TIME|AVG_TEMP|AVG_HUMIDITY"
@@ -65,6 +84,7 @@ export const MerkleService = {
     });
 
     const avgTemp = count > 0 ? sumTemp / count : 0;
+    const avgHumidity = count > 0 ? sumHumidity / count : 0;
 
     // 4. Generate Tree
     const tree = new MerkleTree(leaves, SHA256);
@@ -77,6 +97,9 @@ export const MerkleService = {
       minTemp: minTemp === Number.MAX_VALUE ? 0 : minTemp,
       maxTemp: maxTemp === Number.MIN_VALUE ? 0 : maxTemp,
       avgTemp,
+      minHumidity: minHumidity === Number.MAX_VALUE ? 0 : minHumidity,
+      maxHumidity: maxHumidity === Number.MIN_VALUE ? 0 : maxHumidity,
+      avgHumidity,
     };
   },
 };

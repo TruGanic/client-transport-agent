@@ -34,6 +34,11 @@ export const harvestBatches = sqliteTable('harvest_batches', {
   maxTemp: real('max_temp'),
   avgTempAggregate: real('avg_temp_aggregate'),
   
+  // Humidity Stats
+  minHumidity: real('min_humidity'),
+  maxHumidity: real('max_humidity'),
+  avgHumidityAggregate: real('avg_humidity_aggregate'),
+  
   // 5. State Management
   isTripCompleted: integer('is_trip_completed').default(0), // 0: No, 1: Yes
   
