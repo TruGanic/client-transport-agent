@@ -6,7 +6,8 @@ module.exports = function (api) {
       "nativewind/babel", // The NativeWind processing plugin
     ],
     plugins: [
-      ["inline-import", { "extensions": [".sql"] }] // <--- THIS FIXES THE ERROR
+      ["inline-import", { "extensions": [".sql"] }], // <--- THIS FIXES THE ERROR
+      "react-native-reanimated/plugin",
     ],
   };
 };
