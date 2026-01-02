@@ -174,7 +174,7 @@ const StatusCard = ({
                     <View>
                         <View className="flex-row items-center space-x-2 mb-1">
                             <Ionicons name={isRecording ? "radio-button-on" : "radio-button-off"} size={12} color="#4ADE80" />
-                            <Text className="text-green-100 font-bold text-xs tracking-[2px] uppercase">
+                            <Text className="text-white font-bold text-xs tracking-[2px] uppercase">
                                 {isRecording ? "Live Tracking" : "System Idle"}
                             </Text>
                         </View>
@@ -198,11 +198,11 @@ const StatusCard = ({
                         {isRecording ? (activeBatchId || "Unknown Batch") : "No Active Trip"}
                     </Text>
                     {!isRecording ? (
-                        <Text className="text-green-200 text-sm mt-1">
+                        <Text className="text-white text-sm mt-1">
                             Ready to initialize new shipment.
                         </Text>
                     ) : (
-                        <Text className="text-green-200 text-sm mt-1">
+                        <Text className="text-white text-sm mt-1">
                             Logging sensor data locally.
                         </Text>
                     )}
@@ -211,11 +211,11 @@ const StatusCard = ({
                 {/* Footer Stats - Added Last Sync */}
                 <View className="flex-row items-center justify-between border-t border-white/10 pt-3 mt-2">
                     <View>
-                        <Text className="text-green-200 text-[10px] uppercase font-bold">Total Packets</Text>
+                        <Text className="text-white text-[10px] uppercase font-bold">Total Packets</Text>
                         <Text className="text-white text-base font-bold">{isRecording ? bufferSize : "--"}</Text>
                     </View>
                     <View>
-                        <Text className="text-green-200 text-[10px] uppercase font-bold text-right">Last Sync</Text>
+                        <Text className="text-white text-[10px] uppercase font-bold text-right">Last Sync</Text>
                         <Text className="text-white text-base font-bold text-right">{lastSyncTime}</Text>
                     </View>
                 </View>
@@ -231,7 +231,7 @@ const StatusCard = ({
             <View className="flex-1 justify-between">
                 {/* Header */}
                 <View className="flex-row justify-between items-center">
-                    <Text className="text-teal-100 font-bold text-xs tracking-[2px] uppercase">Temperature</Text>
+                    <Text className="text-white font-bold text-xs tracking-[2px] uppercase">Temperature</Text>
                     <Ionicons name="thermometer" size={16} color="white" />
                 </View>
 
@@ -258,7 +258,7 @@ const StatusCard = ({
                         </View>
                     </View>
                 )}
-                {!isRecording && <Text className="text-teal-200 text-sm">Sensor inactive</Text>}
+                {!isRecording && <Text className="text-white text-sm">Sensor inactive</Text>}
             </View>
         );
     }
@@ -271,7 +271,7 @@ const StatusCard = ({
             <View className="flex-1 justify-between">
                 {/* Header */}
                 <View className="flex-row justify-between items-center">
-                    <Text className="text-blue-100 font-bold text-xs tracking-[2px] uppercase">Humidity</Text>
+                    <Text className="text-white font-bold text-xs tracking-[2px] uppercase">Humidity</Text>
                     <Ionicons name="water" size={16} color="white" />
                 </View>
 
@@ -288,11 +288,11 @@ const StatusCard = ({
                     <View className="self-start">
                         <View className="px-3 py-1.5 rounded-full flex-row items-center bg-blue-900/30">
                             <Ionicons name="cloud-outline" size={14} color="#93C5FD" />
-                            <Text className="text-xs font-bold ml-1 text-blue-200">Relative Level</Text>
+                            <Text className="text-xs font-bold ml-1 text-white">Relative Level</Text>
                         </View>
                     </View>
                 )}
-                {!isRecording && <Text className="text-blue-200 text-sm">Sensor inactive</Text>}
+                {!isRecording && <Text className="text-white text-sm">Sensor inactive</Text>}
             </View>
         );
     }
