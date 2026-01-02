@@ -237,10 +237,10 @@ const StatusCard = ({
 
                 {/* Main Metric */}
                 <View className="flex-row items-baseline">
-                    <Text className="text-white text-6xl font-bold">
+                    <Text className="text-white text-3xl font-bold">
                         {isRecording && currentTemp !== null ? currentTemp.toFixed(1) : "--"}
                     </Text>
-                    <Text className="text-teal-200 text-3xl font-medium ml-1">°C</Text>
+                    <Text className="text-white text-3xl font-medium ml-1">°C</Text>
                 </View>
 
                 {/* Status Pill */}
@@ -277,10 +277,10 @@ const StatusCard = ({
 
                 {/* Main Metric */}
                 <View className="flex-row items-baseline">
-                    <Text className="text-white text-6xl font-bold">
+                    <Text className="text-white text-3xl font-bold">
                         {isRecording && currentHumidity !== null ? currentHumidity.toFixed(0) : "--"}
                     </Text>
-                    <Text className="text-blue-200 text-3xl font-medium ml-1">%</Text>
+                    <Text className="text-white text-3xl font-medium ml-1">%</Text>
                 </View>
 
                 {/* Status Pill */}
