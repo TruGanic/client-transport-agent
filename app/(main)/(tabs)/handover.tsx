@@ -1,3 +1,4 @@
+import HandoverInstructionsCarousel from "@/src/components/HandoverInstructionsCarousel";
 import { Colors } from "@/src/constants/theme";
 import { useTripManager } from "@/src/hooks/useTripManager";
 import { MerkleService } from "@/src/services/merkle.service";
@@ -138,13 +139,18 @@ export default function HandoverScreen() {
                             <Text className="text-white font-bold ml-2 text-lg">STOP TRIP & UNLOAD</Text>
                         </TouchableOpacity>
                     ) : (
-                        <TouchableOpacity
-                            onPress={() => setStep(2)}
-                            className="w-full bg-primary py-4 rounded-xl flex-row justify-center items-center shadow-lg shadow-green-900/20"
-                        >
-                            <Ionicons name="cube-outline" size={24} color="white" />
-                            <Text className="text-white font-bold ml-2 text-lg">PROCEED TO HANDOVER</Text>
-                        </TouchableOpacity>
+                        <View>
+                            <TouchableOpacity
+                                onPress={() => setStep(2)}
+                                className="w-full bg-primary py-4 rounded-xl flex-row justify-center items-center shadow-lg shadow-green-900/20"
+                            >
+                                <Ionicons name="cube-outline" size={24} color="white" />
+                                <Text className="text-white font-bold ml-2 text-lg">PROCEED TO HANDOVER</Text>
+                            </TouchableOpacity>
+
+                            {/* Handover Instructions Carousel */}
+                            <HandoverInstructionsCarousel />
+                        </View>
                     )}
                 </View>
             )}
