@@ -1,3 +1,4 @@
+import SensorGraph from "@/src/components/SensorGraph";
 import { Colors } from "@/src/constants/theme";
 import { ConnectionStatus } from "@/src/enums/connectionStatus.enum";
 import { useTripManager } from "@/src/hooks/useTripManager";
@@ -94,13 +95,13 @@ export default function TripStart() {
           </View>
         </View>
 
-        {/* Graph Placeholder */}
+        {/* Graph Section */}
         <View className="mb-8">
           <Text className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3">Live Trend</Text>
-          <View className="h-32 bg-gray-50 rounded-xl border border-gray-100 items-center justify-center border-dashed">
-            <Text className="text-gray-300 text-xs">Sensor Graph Visualization</Text>
-            {/* In a real app, use react-native-chart-kit here */}
-          </View>
+          <SensorGraph
+            tempData={currentBuffer}
+            humidityData={currentHumidityBuffer}
+          />
         </View>
 
 

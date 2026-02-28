@@ -1,53 +1,57 @@
-# Welcome to your Expo app 👋
+# TruGanic Agent 🚛🌱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**TruGanic Agent** is a specialized food traceability mobile application designed for logistics agents. It connects farmers to transportation hubs, ensuring organic certification integrity through secure, offline-first data collection.
 
-## Get started
+**Key Tech Stack:**
+* **Framework:** React Native (Expo SDK 52)
+* **Language:** TypeScript
+* **Database:** SQLite (local-first) with Drizzle ORM
+* **Connectivity:** Bluetooth Low Energy (BLE) via `react-native-ble-plx`
+* **Architecture:** Expo Router (File-based routing)
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## 🚀 Prerequisites
 
-2. Start the app
+Before you begin, ensure you have the following installed on your machine:
 
-   ```bash
-   npx expo start
-   ```
+1.  **Node.js** (LTS version recommended, e.g., v20+)
+2.  **JDK 17** (Required for Android Builds)
+3.  **Android Studio** (With Android SDK Platform 35 installed)
+4.  **Expo CLI:** `npm install -g eas-cli`
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🛠️ Installation
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repo-url>
+    cd truganic-agent
+    ```
 
-## Get a fresh project
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-When you're ready, run:
+3.  **Setup Environment Variables:**
+    Create a `.env` file in the root directory (if required by your logic):
+    ```env
+    EXPO_PUBLIC_API_URL=[https://api.truganic.com](https://api.truganic.com)
+    ```
+
+---
+
+## 📱 Running the App
+
+**⚠️ IMPORTANT:** This app uses Native Modules (Bluetooth/SQLite). **You cannot use the standard "Expo Go" app.** You must use a **Development Build**.
+
+### Step 1: Generate the Development Build
+This command compiles the native Android code. You only need to run this when you add new native libraries, change `app.json` (icons/names), or switch branches.
 
 ```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+npx expo run:android
 
 
 

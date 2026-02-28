@@ -1,20 +1,6 @@
-import { useRouter } from "expo-router";
-import { Button, Text, View } from "react-native";
-import { useAuthStore } from "../../src/store/auth-store";
+import { Redirect } from "expo-router";
 
-export default function SignInScreen() {
-  const { login } = useAuthStore();
-  const router = useRouter();
-
-  const handleLogin = () => {
-    login(); // update store
-    router.replace("/"); // go to main app
-  };
-
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Sign-in Screen</Text>
-      <Button title="Login" onPress={handleLogin} />
-    </View>
-  );
+// This route is kept for backwards-compat. The main sign-in lives at /(auth)/index.tsx
+export default function SignInRedirect() {
+  return <Redirect href="/(auth)" />;
 }

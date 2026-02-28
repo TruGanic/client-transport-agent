@@ -1,6 +1,5 @@
-import { useAuthStore } from '../store/auth';
-
+import { useAuthStore } from "../store/auth-store";
 
 export function useUser() {
-return useAuthStore((state) => state.user);
+  return useAuthStore((state) => state.user);
 }
