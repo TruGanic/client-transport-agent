@@ -4,8 +4,13 @@ import { useAuthStore } from "@/src/store/auth-store";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { Redirect, Slot } from "expo-router";
-import { ActivityIndicator, Text, View } from "react-native";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
 import "../global.css";
+
+// Keep splash screen visible while we load
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   useDrizzleStudio(expoDbClient);
@@ -13,6 +18,27 @@ export default function RootLayout() {
 
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const hasHydrated = useAuthStore((s) => s._hasHydrated);
+
+  // Safety timeout: if hydration takes too long, force proceed
+  const [forceReady, setForceReady] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!hasHydrated) {
+        console.warn("⚠️ Auth hydration timeout — forcing ready");
+        setForceReady(true);
+      }
+    }, 2000); // 2 second max wait
+    return () => clearTimeout(timer);
+  }, [hasHydrated]);
+
+  const isReady = success && (hasHydrated || forceReady);
+
+  // Hide splash screen once everything is loaded
+  useEffect(() => {
+    if (isReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [isReady]);
 
   if (error) {
     return (
@@ -22,20 +48,9 @@ export default function RootLayout() {
     );
   }
 
-  // Wait for both DB migration and auth hydration from AsyncStorage
-  if (!success || !hasHydrated) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#F4F6F8",
-        }}
-      >
-        <ActivityIndicator size="large" color="#2E7D32" />
-      </View>
-    );
+  // Keep native splash visible while loading
+  if (!isReady) {
+    return null;
   }
 
   // Auth Guard: redirect based on login state

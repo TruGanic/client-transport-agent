@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "food-traceability-app",
+    "name": "Truganic-Agent",
     "slug": "food-traceability-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
-    "scheme": "foodtraceabilityapp",
+    "scheme": "truganicagent",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -15,7 +15,7 @@
     "android": {
       "package": "com.asirialwis.foodtraceability",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#2E7D32",
         "foregroundImage": "./src/assets/images/android-icon-foreground.png",
         "backgroundImage": "./src/assets/images/android-icon-background.png",
         "monochromeImage": "./src/assets/images/android-icon-monochrome.png"
@@ -43,9 +43,9 @@
           "image": "./src/assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#2E7D32",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#1B5E20"
           }
         }
       ],
@@ -68,9 +68,7 @@
         "react-native-ble-plx",
         {
           "isBackgroundEnabled": true,
-          "modes": [
-            "central"
-          ],
+          "modes": ["central"],
           "bluetoothAlwaysPermission": "Allow this app to connect to food traceability sensors to collect research data."
         }
       ]
@@ -84,6 +82,7 @@
       "eas": {
         "projectId": "01771e47-3823-463f-8683-30af9bff2245"
       }
-    }
+    },
+    "owner": "asiri_25"
   }
 }
