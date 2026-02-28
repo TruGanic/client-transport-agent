@@ -28,7 +28,8 @@
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
         "android.permission.BLUETOOTH_CONNECT",
-        "android.permission.BLUETOOTH_SCAN"
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.CAMERA"
       ]
     },
     "web": {
@@ -37,6 +38,12 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Truganic-Agent to access the camera to scan QR codes for supplier and batch identification."
+        }
+      ],
       [
         "expo-splash-screen",
         {
