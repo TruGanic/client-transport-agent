@@ -43,6 +43,13 @@
       "when": 1772295586509,
       "tag": "0005_hesitant_marrow",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1772380800000,
+      "tag": "0006_add_invoice_uri",
+      "breakpoints": true
     }
   ]
 }

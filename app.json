@@ -58,6 +58,13 @@
       ],
       "expo-sqlite",
       [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Truganic-Agent to access your location for pickup tracking."
+        }
+      ],
+      "expo-document-picker",
+      [
         "expo-build-properties",
         {
           "android": {

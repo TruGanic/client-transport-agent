@@ -17,16 +17,16 @@ export const harvestBatches = sqliteTable("harvest_batches", {
   // 1. Traceability Core
   batchId: text("batch_id").notNull().unique(), // e.g., "BATCH-2025-X92"
   produceType: text("produce_type").notNull(), // e.g., "Organic Avocados"
-  foodBatchId: text("food_batch_id"), // Food Batch ID from QR or manual entry
 
   // 2. Quantity & Origin
   weightKg: real("weight_kg").notNull(),
   supplierId: text("supplier_id").notNull(), // The Farm/Source ID
-  farmerName: text("farmer_name"), // NEW: For ConfirmPickup
-  pickupLocation: text("pickup_location"), // NEW: For ConfirmPickup
+  farmerName: text("farmer_name"), // For ConfirmPickup
+  pickupLocation: text("pickup_location"), // GPS auto-detected
 
   // 3. Audit Metadata
   notes: text("notes"),
+  invoiceUri: text("invoice_uri"), // Local file path for invoice (PDF/JPG/PNG)
   recordedAt: integer("recorded_at").notNull(), // Timestamp
 
   // 4. Trip Stats (Aggregated at end of trip)
