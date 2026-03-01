@@ -1,6 +1,6 @@
 import NetInfo from "@react-native-community/netinfo";
 import SHA256 from "crypto-js/sha256";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { MerkleTree } from "merkletreejs";
 import { db } from "../database/client";
 import { harvestBatches } from "../database/schema";
@@ -107,6 +107,43 @@ async function postPickup(fd: FormData): Promise<any> {
 }
 
 /**
+ * POST complete-trip data to the backend API.
+ * Sends JSON body with sensor aggregates + merkle root.
+ * Automatically refreshes JWT if expired before sending.
+ */
+async function postCompleteTrip(payload: {
+  batchID: string;
+  minTemp: number;
+  maxTemp: number;
+  avgTemp: number;
+  minHumidity: number;
+  maxHumidity: number;
+  avgHumidity: number;
+  merkleRoot: string;
+}): Promise<any> {
+  const url = `${API_BASE_URL}/api/transport/complete-trip`;
+  console.log(`📡 [API] POST ${url}`);
+
+  const token = await getValidToken();
+
+  const res = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`API ${res.status}: ${text}`);
+  }
+
+  return res.json();
+}
+
+/**
  * Generate a Merkle root from an array of harvest batch records.
  * Each leaf = SHA256(batchId|produceType|weight|timestamp).
  */
@@ -144,57 +181,113 @@ export const SyncService = {
     useSyncStore.getState().setSyncing(true);
 
     try {
+      // ── 1. Sync pending pickups ──────────────────────────────────────
       const pendingBatches = await db
         .select()
         .from(harvestBatches)
         .where(eq(harvestBatches.syncStatus, "PENDING"));
 
-      if (pendingBatches.length === 0) {
-        console.log("✅ [SyncService] Nothing to sync.");
-        useSyncStore.getState().setSyncing(false);
-        return;
+      if (pendingBatches.length > 0) {
+        console.log(
+          `📦 [SyncService] Found ${pendingBatches.length} pending pickups.`,
+        );
+
+        // Generate merkle root across ALL pending batches for audit trail
+        const merkleRoot = generateBatchMerkleRoot(pendingBatches);
+        console.log(
+          `🌳 [SyncService] Merkle root for ${pendingBatches.length} buffered batches: ${merkleRoot}`,
+        );
+
+        // Store the merkle root on each pending batch
+        for (const batch of pendingBatches) {
+          await db
+            .update(harvestBatches)
+            .set({ merkleRoot })
+            .where(eq(harvestBatches.id, batch.id));
+        }
+
+        // Sync each pickup individually via API
+        for (const batch of pendingBatches) {
+          try {
+            const fd = buildPickupFormData(batch);
+            await postPickup(fd);
+
+            // If trip was also completed, sync that too
+            if (batch.isTripCompleted === 1 && batch.merkleRoot) {
+              await postCompleteTrip({
+                batchID: batch.batchId,
+                minTemp: batch.minTemp ?? 0,
+                maxTemp: batch.maxTemp ?? 0,
+                avgTemp: batch.avgTempAggregate ?? 0,
+                minHumidity: batch.minHumidity ?? 0,
+                maxHumidity: batch.maxHumidity ?? 0,
+                avgHumidity: batch.avgHumidityAggregate ?? 0,
+                merkleRoot: batch.merkleRoot,
+              });
+            }
+
+            await db
+              .update(harvestBatches)
+              .set({ syncStatus: "SYNCED" })
+              .where(eq(harvestBatches.id, batch.id));
+
+            console.log(`✅ [SyncService] Batch ${batch.batchId} synced.`);
+          } catch (e: any) {
+            console.error(
+              `❌ [SyncService] Failed to sync batch ${batch.batchId}:`,
+              e.message,
+            );
+            await db
+              .update(harvestBatches)
+              .set({ syncStatus: "FAILED" })
+              .where(eq(harvestBatches.id, batch.id));
+          }
+        }
       }
 
-      console.log(
-        `📦 [SyncService] Found ${pendingBatches.length} pending items.`,
-      );
+      // ── 2. Retry failed complete-trip calls ─────────────────────────
+      //    These are batches where pickup was synced but complete-trip failed
+      const failedTrips = await db
+        .select()
+        .from(harvestBatches)
+        .where(
+          and(
+            eq(harvestBatches.syncStatus, "FAILED"),
+            eq(harvestBatches.isTripCompleted, 1),
+          ),
+        );
 
-      // Generate merkle root across ALL pending batches for audit trail
-      const merkleRoot = generateBatchMerkleRoot(pendingBatches);
-      console.log(
-        `🌳 [SyncService] Merkle root for ${pendingBatches.length} buffered batches: ${merkleRoot}`,
-      );
-
-      // Store the merkle root on each pending batch
-      for (const batch of pendingBatches) {
-        await db
-          .update(harvestBatches)
-          .set({ merkleRoot })
-          .where(eq(harvestBatches.id, batch.id));
-      }
-
-      // Sync each batch individually via API
-      for (const batch of pendingBatches) {
+      for (const batch of failedTrips) {
         try {
-          const fd = buildPickupFormData(batch);
-          await postPickup(fd);
+          await postCompleteTrip({
+            batchID: batch.batchId,
+            minTemp: batch.minTemp ?? 0,
+            maxTemp: batch.maxTemp ?? 0,
+            avgTemp: batch.avgTempAggregate ?? 0,
+            minHumidity: batch.minHumidity ?? 0,
+            maxHumidity: batch.maxHumidity ?? 0,
+            avgHumidity: batch.avgHumidityAggregate ?? 0,
+            merkleRoot: batch.merkleRoot ?? "",
+          });
 
           await db
             .update(harvestBatches)
             .set({ syncStatus: "SYNCED" })
             .where(eq(harvestBatches.id, batch.id));
 
-          console.log(`✅ [SyncService] Batch ${batch.batchId} synced.`);
+          console.log(
+            `✅ [SyncService] Retried complete-trip for ${batch.batchId} — synced.`,
+          );
         } catch (e: any) {
           console.error(
-            `❌ [SyncService] Failed to sync batch ${batch.batchId}:`,
+            `❌ [SyncService] Retry complete-trip failed for ${batch.batchId}:`,
             e.message,
           );
-          await db
-            .update(harvestBatches)
-            .set({ syncStatus: "FAILED" })
-            .where(eq(harvestBatches.id, batch.id));
         }
+      }
+
+      if (pendingBatches.length === 0 && failedTrips.length === 0) {
+        console.log("✅ [SyncService] Nothing to sync.");
       }
 
       useSyncStore.getState().setLastSyncTime(Date.now());
@@ -299,11 +392,35 @@ export const SyncService = {
   },
 
   /**
-   * Scenario C: Trip Completion
+   * Scenario C: Trip Completion — called from Handover screen.
+   * 1. Saves aggregated sensor stats + merkle root locally
+   * 2. If online: ensures pickup was synced first, then POSTs to /api/transport/complete-trip
+   * 3. If offline: queued for later sync
    */
-  async finalizeTrip(batchId: string, stats: any) {
-    console.log("🔄 [SyncService] Finalizing Trip...", batchId);
+  async finalizeTrip(
+    batchId: string,
+    stats: {
+      merkleRoot: string;
+      minTemp: number;
+      maxTemp: number;
+      avgTemp: number;
+      minHumidity: number;
+      maxHumidity: number;
+      avgHumidity: number;
+    },
+  ) {
+    console.log("========================================");
+    console.log("🔄 [SyncService.finalizeTrip] START");
+    console.log(`📦 [SyncService.finalizeTrip] batchId: ${batchId}`);
+    console.log(
+      `📊 [SyncService.finalizeTrip] Stats received:`,
+      JSON.stringify(stats, null, 2),
+    );
 
+    // 1. Save stats locally to harvest_batches
+    console.log(
+      "💾 [SyncService.finalizeTrip] Step 1: Saving stats to local DB (harvest_batches)...",
+    );
     await db
       .update(harvestBatches)
       .set({
@@ -317,16 +434,31 @@ export const SyncService = {
         isTripCompleted: 1,
       })
       .where(eq(harvestBatches.batchId, batchId));
+    console.log(
+      "✅ [SyncService.finalizeTrip] Step 1 DONE — Stats saved locally.",
+    );
 
-    const state = await NetInfo.fetch();
-    if (!state.isConnected) {
-      console.log("❌ [SyncService] Offline. Trip Finalization Queued.");
+    // 2. Check connectivity
+    const netState = await NetInfo.fetch();
+    console.log(
+      `🌐 [SyncService.finalizeTrip] Step 2: Connectivity check → isConnected=${netState.isConnected}`,
+    );
+
+    if (!netState.isConnected) {
+      console.log(
+        "❌ [SyncService.finalizeTrip] OFFLINE — Trip data saved locally. Queued for sync when online.",
+      );
+      console.log("========================================");
       return { success: true, synced: false };
     }
 
     useSyncStore.getState().setSyncing(true);
+    console.log(
+      "📡 [SyncService.finalizeTrip] ONLINE — Proceeding with API sync...",
+    );
 
     try {
+      // 3. Read back the record to check pickup sync status
       const batch = await db
         .select()
         .from(harvestBatches)
@@ -334,31 +466,105 @@ export const SyncService = {
       const record = batch[0];
 
       if (!record) {
-        throw new Error(`Batch record not found for ID: ${batchId}`);
+        throw new Error(`Batch record not found in DB for batchId: ${batchId}`);
       }
 
-      // If pickup wasn't synced yet, sync it first
+      console.log(
+        `📋 [SyncService.finalizeTrip] Step 3: DB record syncStatus=${record.syncStatus}`,
+      );
+
+      // 4. If pickup wasn't synced yet, sync it first (order matters for blockchain)
       if (record.syncStatus === "PENDING") {
         console.log(
-          "⚠️ [SyncService] Found pending pickup. Syncing that first...",
+          "⚠️ [SyncService.finalizeTrip] Step 4: Pickup still PENDING — syncing pickup first...",
         );
         const fd = buildPickupFormData(record);
         await postPickup(fd);
+        console.log(
+          "✅ [SyncService.finalizeTrip] Step 4 DONE — Pickup synced.",
+        );
+      } else {
+        console.log(
+          "✅ [SyncService.finalizeTrip] Step 4: Pickup already synced. Skipping.",
+        );
       }
 
-      // Mark completed
+      // 5. POST to /api/transport/complete-trip
+      //    Guard: backend rejects empty batchID or merkleRoot
+      let finalMerkleRoot = stats.merkleRoot;
+      if (!finalMerkleRoot) {
+        console.warn(
+          "⚠️ [SyncService.finalizeTrip] merkleRoot is empty — no sensor batches found in time range.",
+        );
+        console.warn(
+          "⚠️ [SyncService.finalizeTrip] Generating fallback merkleRoot from batch record...",
+        );
+        finalMerkleRoot = SHA256(
+          `${batchId}|${record.produceType}|${record.weightKg}|${record.recordedAt}`,
+        ).toString();
+        console.log(
+          `🌳 [SyncService.finalizeTrip] Fallback merkleRoot: ${finalMerkleRoot}`,
+        );
+      }
+
+      const completeTripPayload = {
+        batchID: batchId,
+        minTemp: stats.minTemp,
+        maxTemp: stats.maxTemp,
+        avgTemp: stats.avgTemp,
+        minHumidity: stats.minHumidity,
+        maxHumidity: stats.maxHumidity,
+        avgHumidity: stats.avgHumidity,
+        merkleRoot: finalMerkleRoot,
+      };
+
+      console.log(
+        "📡 [SyncService.finalizeTrip] Step 5: Calling complete-trip API...",
+      );
+      console.log(
+        "📡 [SyncService.finalizeTrip] Payload:",
+        JSON.stringify(completeTripPayload, null, 2),
+      );
+
+      const apiResponse = await postCompleteTrip(completeTripPayload);
+      console.log(
+        "✅ [SyncService.finalizeTrip] Step 5 DONE — API Response:",
+        JSON.stringify(apiResponse),
+      );
+
+      // 6. Mark as fully synced
       await db
         .update(harvestBatches)
         .set({ syncStatus: "SYNCED" })
         .where(eq(harvestBatches.batchId, batchId));
 
-      console.log("✅ [SyncService] Trip Fully Synced!");
+      console.log(
+        "✅ [SyncService.finalizeTrip] Step 6: Marked SYNCED in local DB.",
+      );
+      console.log(
+        "🎉 [SyncService.finalizeTrip] COMPLETE — Trip Fully Synced!",
+      );
+      console.log("========================================");
       useSyncStore.getState().setLastSyncTime(Date.now());
       return { success: true, synced: true };
     } catch (e: any) {
-      console.error("❌ [SyncService] Sync Failed:", e);
+      console.error(
+        "❌ [SyncService.finalizeTrip] API SYNC FAILED:",
+        e.message || e,
+      );
+      console.error(
+        "❌ [SyncService.finalizeTrip] Data is saved locally. Will retry on reconnect.",
+      );
+      console.log("========================================");
+
+      // Mark as FAILED so it can be retried by syncPendingData
+      await db
+        .update(harvestBatches)
+        .set({ syncStatus: "FAILED" })
+        .where(eq(harvestBatches.batchId, batchId));
+
       useSyncStore.getState().setSyncError(e.message);
-      return { success: false, error: e };
+      return { success: true, synced: false, error: e };
     } finally {
       useSyncStore.getState().setSyncing(false);
     }

@@ -10,6 +10,7 @@ export const useTripManager = () => {
     addLog,
     setRecording,
     clearLogs,
+    clearTripData,
   } = useTripStore();
 
   // 2. Public API
@@ -21,6 +22,8 @@ export const useTripManager = () => {
     logs: useTripStore((s) => s.logs),
     activeBatchId: useTripStore((s) => s.activeBatchId),
     batchStartTime: useTripStore((s) => s.batchStartTime),
+    tripStartTime: useTripStore((s) => s.tripStartTime),
+    tripEndTime: useTripStore((s) => s.tripEndTime),
     setActiveBatchId: useTripStore((s) => s.setActiveBatchId),
     startTrip: () => {
       // Logic handled by TripController (watching isRecording)
@@ -30,11 +33,14 @@ export const useTripManager = () => {
       addLog("Trip started.");
     },
     stopTrip: () => {
-      // Logic handled by TripController
+      // Set recording to false — TripController will:
+      //   1. Flush remaining buffer to DB
+      //   2. Disconnect BLE via useBleSession cleanup
       setRecording(false);
       setConnectionStatus(ConnectionStatus.IDLE);
       addLog("Trip stopped.");
-      // Note: We don't clear activeBatchId here immediately, so we can use it in Handover
+      // Note: We don't clear activeBatchId/tripStartTime here — needed for Handover
     },
+    clearTripData,
   };
 };
