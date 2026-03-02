@@ -94,8 +94,6 @@ export const useBleSession = ({
 
           if (error) {
             // Expected on disconnect — silently ignore
-            if (!isActiveRef.current) return;
-            console.debug("BLE monitor error (non-critical):", error.reason);
             return;
           }
 

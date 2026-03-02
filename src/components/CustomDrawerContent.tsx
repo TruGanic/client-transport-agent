@@ -3,8 +3,8 @@ import { useAuthStore } from "@/src/store/auth-store";
 import { useSyncStore } from "@/src/store/sync-store";
 import { Ionicons } from "@expo/vector-icons";
 import {
-    DrawerContentScrollView,
-    DrawerItemList,
+  DrawerContentScrollView,
+  DrawerItemList,
 } from "@react-navigation/drawer";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -41,7 +41,7 @@ export default function CustomDrawerContent(props: any) {
       {/* 1. Custom Header */}
       <View
         style={{ paddingTop: insets.top + 20 }}
-        className="bg-primary px-6 pb-8 rounded-b-[40px] shadow-xl mb-6 relative overflow-hidden"
+        className="bg-primary px-6 pb-10 rounded-b-[40px] shadow-xl mb-8 relative overflow-hidden"
       >
         {/* Background Pattern (Subtle) */}
         <View className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -mr-16 -mt-16" />
@@ -63,20 +63,29 @@ export default function CustomDrawerContent(props: any) {
         </View>
 
         {/* User Card */}
-        <View className="bg-primaryDark/50 p-4 rounded-2xl flex-row items-center border border-white/10">
-          <View className="w-12 h-12 bg-white/20 rounded-full items-center justify-center border border-white/30">
+        <View className="bg-white/15 p-4 rounded-2xl flex-row items-center border border-white/10">
+          <View className="w-12 h-12 bg-white/20 rounded-full items-center justify-center border-2 border-white/40">
             <Ionicons name="person" size={24} color="white" />
           </View>
           <View className="ml-3 flex-1">
-            <Text className="text-white text-base font-bold">
-              {displayName}
-            </Text>
+            <View className="flex-row items-center">
+              <Text className="text-white text-base font-bold">
+                {displayName}
+              </Text>
+              <View className="bg-white/20 px-2 py-0.5 rounded-full ml-2">
+                <Text className="text-green-100 text-[9px] font-bold">
+                  Agent
+                </Text>
+              </View>
+            </View>
             {displayEmail ? (
               <Text className="text-green-200 text-xs mt-0.5" numberOfLines={1}>
                 {displayEmail}
               </Text>
             ) : null}
-            <View className="flex-row items-center mt-0.5">
+            {/* Status separator */}
+            <View className="h-px bg-white/15 my-1.5" />
+            <View className="flex-row items-center">
               <View
                 className={`w-2 h-2 rounded-full mr-1.5 ${isOnline ? "bg-green-400" : "bg-red-400"}`}
               />
