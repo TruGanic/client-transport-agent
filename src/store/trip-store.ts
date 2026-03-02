@@ -74,8 +74,9 @@ export const useTripStore = create<ITripState>()(
       storage: createJSONStorage(() => AsyncStorage),
       // Only save these fields. DO NOT save 'connectionStatus'
       // because when restart, disconnected by definition.
+      // NEVER persist isRecording — BLE connection can't survive app restart.
+      // Persisting it causes the BLE hook to fire before navigation is ready.
       partialize: (state) => ({
-        isRecording: state.isRecording,
         activeBatchId: state.activeBatchId,
         currentBuffer: state.currentBuffer,
         currentHumidityBuffer: state.currentHumidityBuffer,
