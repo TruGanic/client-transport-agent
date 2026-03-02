@@ -4,7 +4,6 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { ConnectionStatus } from "../enums/connectionStatus.enum";
 import { ITripState } from "../interfaces/ITripState";
 
-
 export const useTripStore = create<ITripState>()(
   persist(
     (set) => ({
@@ -14,13 +13,19 @@ export const useTripStore = create<ITripState>()(
       currentBuffer: [],
       currentHumidityBuffer: [],
       batchStartTime: null,
+      tripStartTime: null,
+      tripEndTime: null,
       logs: [],
 
       setRecording: (status) =>
-        set({
+        set((state) => ({
           isRecording: status,
+          // When starting: set both batch and trip start times
+          // When stopping: preserve tripStartTime, set tripEndTime, null batchStartTime
           batchStartTime: status ? Date.now() : null,
-        }),
+          tripStartTime: status ? Date.now() : state.tripStartTime,
+          tripEndTime: status ? null : Date.now(),
+        })),
 
       setActiveBatchId: (id) => set({ activeBatchId: id }),
 
@@ -30,7 +35,10 @@ export const useTripStore = create<ITripState>()(
       addToBuffer: (temp, humidity) =>
         set((state) => ({
           currentBuffer: [...state.currentBuffer, temp],
-          currentHumidityBuffer: [...(state.currentHumidityBuffer || []), humidity],
+          currentHumidityBuffer: [
+            ...(state.currentHumidityBuffer || []),
+            humidity,
+          ],
         })),
 
       resetBuffer: () =>
@@ -49,6 +57,17 @@ export const useTripStore = create<ITripState>()(
         })),
 
       clearLogs: () => set({ logs: [] }),
+
+      clearTripData: () =>
+        set({
+          currentBuffer: [],
+          currentHumidityBuffer: [],
+          batchStartTime: null,
+          tripStartTime: null,
+          tripEndTime: null,
+          activeBatchId: null,
+          logs: [],
+        }),
     }),
     {
       name: "trip-storage", // Unique name for storage
@@ -61,8 +80,10 @@ export const useTripStore = create<ITripState>()(
         currentBuffer: state.currentBuffer,
         currentHumidityBuffer: state.currentHumidityBuffer,
         batchStartTime: state.batchStartTime,
+        tripStartTime: state.tripStartTime,
+        tripEndTime: state.tripEndTime,
         logs: state.logs,
       }),
-    }
-  )
+    },
+  ),
 );

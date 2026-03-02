@@ -36,6 +36,20 @@
       "when": 1767260554789,
       "tag": "0004_brief_triathlon",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1772295586509,
+      "tag": "0005_hesitant_marrow",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1772380800000,
+      "tag": "0006_add_invoice_uri",
+      "breakpoints": true
     }
   ]
 }

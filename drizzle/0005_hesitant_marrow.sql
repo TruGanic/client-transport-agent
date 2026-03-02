@@ -1,0 +1,1 @@
+ALTER TABLE `harvest_batches` ADD `food_batch_id` text;

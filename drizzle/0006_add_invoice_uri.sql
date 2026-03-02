@@ -1,0 +1,1 @@
+ALTER TABLE `harvest_batches` ADD `invoice_uri` text;

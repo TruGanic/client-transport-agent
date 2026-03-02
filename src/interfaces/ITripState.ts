@@ -7,6 +7,8 @@ export interface ITripState {
   currentBuffer: number[];
   currentHumidityBuffer: number[];
   batchStartTime: number | null;
+  tripStartTime: number | null;
+  tripEndTime: number | null;
   logs: string[];
 
   setRecording: (status: boolean) => void;
@@ -16,4 +18,5 @@ export interface ITripState {
   resetBuffer: () => void;
   addLog: (message: string) => void;
   clearLogs: () => void;
+  clearTripData: () => void;
 }
