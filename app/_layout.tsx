@@ -7,7 +7,17 @@ import { Redirect, Slot } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
+import {
+    configureReanimatedLogger,
+    ReanimatedLogLevel,
+} from "react-native-reanimated";
 import "../global.css";
+
+// Suppress Reanimated strict-mode warnings from third-party libs
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false,
+});
 
 // Keep splash screen visible while we load
 SplashScreen.preventAutoHideAsync();
