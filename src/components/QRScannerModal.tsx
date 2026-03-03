@@ -2,12 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import { Colors } from "@/src/constants/theme";
@@ -84,16 +84,20 @@ export default function QRScannerModal({
               </TouchableOpacity>
             </View>
           ) : (
-            <CameraView
-              style={StyleSheet.absoluteFillObject}
-              facing="back"
-              barcodeScannerSettings={{
-                barcodeTypes: ["qr", "ean13", "ean8", "code128", "code39"],
-              }}
-              onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-            >
-              {/* Overlay with cutout */}
-              <View style={styles.overlay}>
+            <>
+              <CameraView
+                style={StyleSheet.absoluteFillObject}
+                facing="back"
+                barcodeScannerSettings={{
+                  barcodeTypes: ["qr", "ean13", "ean8", "code128", "code39"],
+                }}
+                onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+              />
+              {/* Overlay with cutout — positioned on top of camera, not as child */}
+              <View
+                style={[StyleSheet.absoluteFillObject, styles.overlay]}
+                pointerEvents="none"
+              >
                 {/* Top */}
                 <View style={styles.overlaySection} />
                 {/* Middle Row */}
@@ -116,7 +120,7 @@ export default function QRScannerModal({
                   </Text>
                 </View>
               </View>
-            </CameraView>
+            </>
           )}
         </View>
 

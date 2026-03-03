@@ -93,11 +93,7 @@ export const useBleSession = ({
           if (!isActiveRef.current) return;
 
           if (error) {
-            // This fires on disconnect — don't crash, just log
-            console.warn(
-              "BLE Monitor callback error (expected on disconnect):",
-              error.message,
-            );
+            // Expected on disconnect — silently ignore
             return;
           }
 
