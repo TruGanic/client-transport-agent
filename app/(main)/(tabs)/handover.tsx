@@ -124,8 +124,9 @@ export default function HandoverScreen() {
 
   // ─── CONFIRM HANDOVER: Physical custody transfer confirmed ──────────
   const handleConfirmHandover = () => {
-    console.log("✅ [Handover] CONFIRM HANDOVER pressed — clearing trip data");
-    clearTripData();
+    console.log(
+      "✅ [Handover] CONFIRM HANDOVER pressed — preserving trip data",
+    );
     setStep(3);
   };
 

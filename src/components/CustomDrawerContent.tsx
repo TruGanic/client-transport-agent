@@ -40,8 +40,8 @@ export default function CustomDrawerContent(props: any) {
     <View style={{ flex: 1 }}>
       {/* 1. Custom Header */}
       <View
-        style={{ paddingTop: insets.top + 20 }}
-        className="bg-primary px-6 pb-10 rounded-b-[40px] shadow-xl mb-8 relative overflow-hidden"
+        style={{ paddingTop: insets.top }}
+        className="bg-primary px-6 pb-8 rounded-b-[40px] shadow-xl mb-6 relative overflow-hidden"
       >
         {/* Background Pattern (Subtle) */}
         <View className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -mr-16 -mt-16" />
