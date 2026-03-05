@@ -11,6 +11,7 @@ export const useTripManager = () => {
     setRecording,
     clearLogs,
     clearTripData,
+    clearBatchData,
   } = useTripStore();
 
   // 2. Public API
@@ -42,5 +43,6 @@ export const useTripManager = () => {
       // Note: We don't clear activeBatchId/tripStartTime here — needed for Handover
     },
     clearTripData,
+    clearBatchData,
   };
 };

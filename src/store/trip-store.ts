@@ -68,6 +68,16 @@ export const useTripStore = create<ITripState>()(
           activeBatchId: null,
           logs: [],
         }),
+
+      // Clears only batch-specific data, preserving sensor buffers
+      clearBatchData: () =>
+        set({
+          batchStartTime: null,
+          tripStartTime: null,
+          tripEndTime: null,
+          activeBatchId: null,
+          logs: [],
+        }),
     }),
     {
       name: "trip-storage", // Unique name for storage
