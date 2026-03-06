@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Truganic-Agent",
+    "name": "TruGanic-Agent",
     "slug": "food-traceability-app",
     "version": "1.0.1",
     "orientation": "portrait",
@@ -71,7 +71,8 @@
             "minSdkVersion": 24,
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
-            "buildToolsVersion": "35.0.0"
+            "buildToolsVersion": "35.0.0",
+            "usesCleartextTraffic": true
           },
           "ios": {
             "deploymentTarget": "15.4"
