@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "TruGanic-Agent",
+    "name": "TruGanic-Dev",
     "slug": "food-traceability-app",
-    "version": "1.0.1",
+    "version": "1.0.1-dev",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
-    "scheme": "truganicagent",
+    "scheme": "truganicagentdev",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -13,7 +13,7 @@
       "bundleIdentifier": "com.asirialwis.foodtraceability"
     },
     "android": {
-      "package": "com.asirialwis.foodtraceability",
+      "package": "com.asirialwis.foodtraceability.dev",
       "adaptiveIcon": {
         "backgroundColor": "#2E7D32",
         "foregroundImage": "./src/assets/images/android-icon-foreground.png",

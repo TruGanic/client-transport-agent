@@ -17,22 +17,27 @@ interface ITripStats {
 export const MerkleService = {
   /**
    * Generates a Merkle Proof and Aggregated Stats for a given time range (Trip).
-   * 
+   *
    * @param startTime Trip Start Timestamp
    * @param endTime Trip End Timestamp
    * @returns Stats + Merkle Root
    */
-  async generateTripProof(startTime: number, endTime: number): Promise<ITripStats> {
-    
-    // 1. Fetch all sensor batches for this trip
+  async generateTripProof(
+    startTime: number,
+    endTime: number,
+  ): Promise<ITripStats> {
+    // 1. Fetch all sensor batches that overlap with this trip's time window.
+    //    Overlap condition: batch.startTime <= tripEnd AND batch.endTime >= tripStart
+    //    This ensures we include the final flush batch whose endTime may slightly
+    //    exceed tripEndTime (the flush runs a few ms after recording stops).
     const batches = await db
       .select()
       .from(sensorBatches)
       .where(
         and(
-            gte(sensorBatches.startTime, startTime),
-            lte(sensorBatches.endTime, endTime)
-        )
+          lte(sensorBatches.startTime, endTime),
+          gte(sensorBatches.endTime, startTime),
+        ),
       );
 
     if (batches.length === 0) {
@@ -51,30 +56,30 @@ export const MerkleService = {
     let minTemp = Number.MAX_VALUE;
     let maxTemp = Number.MIN_VALUE;
     let sumTemp = 0;
-    
+
     let minHumidity = Number.MAX_VALUE;
     let maxHumidity = Number.MIN_VALUE;
     let sumHumidity = 0;
-    
+
     let count = 0;
 
     // 3. Prepare Leaves for Merkle Tree
     const leaves = batches.map((batch) => {
       // Statistics Logic
       if (batch.avgTemp !== null) {
-          const val = batch.avgTemp;
-          if (val < minTemp) minTemp = val;
-          if (val > maxTemp) maxTemp = val;
-          sumTemp += val;
+        const val = batch.avgTemp;
+        if (val < minTemp) minTemp = val;
+        if (val > maxTemp) maxTemp = val;
+        sumTemp += val;
       }
-      
+
       if (batch.avgHumidity !== null) {
-          const val = batch.avgHumidity;
-          if (val < minHumidity) minHumidity = val;
-          if (val > maxHumidity) maxHumidity = val;
-          sumHumidity += val;
+        const val = batch.avgHumidity;
+        if (val < minHumidity) minHumidity = val;
+        if (val > maxHumidity) maxHumidity = val;
+        sumHumidity += val;
       }
-      
+
       count++; // Assuming every batch has valid data for simplicity or count individually if needed
 
       // Hash Logic: Create a deterministic string from the batch data
@@ -90,7 +95,9 @@ export const MerkleService = {
     const tree = new MerkleTree(leaves, SHA256);
     const merkleRoot = tree.getHexRoot();
 
-    console.log(`[MerkleService] Generated Root: ${merkleRoot} for ${leaves.length} batches.`);
+    console.log(
+      `[MerkleService] Generated Root: ${merkleRoot} for ${leaves.length} batches.`,
+    );
 
     return {
       merkleRoot,

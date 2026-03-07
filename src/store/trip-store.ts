@@ -21,8 +21,10 @@ export const useTripStore = create<ITripState>()(
         set((state) => ({
           isRecording: status,
           // When starting: set both batch and trip start times
-          // When stopping: preserve tripStartTime, set tripEndTime, null batchStartTime
-          batchStartTime: status ? Date.now() : null,
+          // When stopping: preserve tripStartTime and batchStartTime so TripController
+          //   can flush the final partial batch with the correct time range.
+          //   batchStartTime is cleared later by resetBuffer / clearTripData / clearBatchData.
+          batchStartTime: status ? Date.now() : state.batchStartTime,
           tripStartTime: status ? Date.now() : state.tripStartTime,
           tripEndTime: status ? null : Date.now(),
         })),
