@@ -1,13 +1,7 @@
 import { Colors } from "@/src/constants/theme";
-import { cssInterop } from "nativewind";
 import React from "react";
 import { Dimensions, Text, View } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
-
-// Register LineChart with NativeWind so it doesn't trigger
-// the css-interop upgrade warning (which serializes navigation
-// context and throws "Couldn't find a navigation context").
-cssInterop(LineChart, { className: "style" });
 
 interface SensorGraphProps {
   tempData: number[];
