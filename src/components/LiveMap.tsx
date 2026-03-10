@@ -1,8 +1,12 @@
 import * as Location from "expo-location";
+import { cssInterop } from "nativewind";
 import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { Colors } from "../constants/theme";
+
+// Prevent NativeWind css-interop upgrade warning for WebView
+cssInterop(WebView, { className: "style" });
 
 interface LiveMapProps {
   /** Height of the map container */

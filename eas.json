@@ -11,13 +11,18 @@
     "preview": {
       "distribution": "internal",
       "android": {
-        "buildType": "apk" 
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://zkuyjjktwxtykbjqmpva.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_API_KEY": "sb_publishable_pgY3l3h6JsdTwDm3UEm_Zg_6F2rDQO0",
+        "EXPO_PUBLIC_API_BASE_URL": "http://35.198.229.152:3001"
       }
     },
     "production": {
       "autoIncrement": true,
       "android": {
-        "buildType": "app-bundle" 
+        "buildType": "app-bundle"
       }
     }
   },

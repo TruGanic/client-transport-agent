@@ -19,4 +19,5 @@ export interface ITripState {
   addLog: (message: string) => void;
   clearLogs: () => void;
   clearTripData: () => void;
+  clearBatchData: () => void;
 }

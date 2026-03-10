@@ -1,4 +1,5 @@
-import { useBleSession } from "@/src/hooks/useBleSession";
+// import { useBleSession } from "@/src/hooks/useBleSession"; // Original BLE
+import { useSimulatedSensor } from "@/src/hooks/useSimulatedSensor";
 import { Buffer } from "buffer";
 import { useEffect, useRef } from "react";
 import { TransportService } from "../features/transport/transport.service";
@@ -106,7 +107,8 @@ export default function TripController() {
   };
 
   // BLE Lifecycle — starts/stops based on isRecording
-  useBleSession({
+  // Using simulated sensor instead of real BLE to avoid crashes
+  useSimulatedSensor({
     isRecording,
     onDataReceived: processIncomingData,
     onStatusChange: setConnectionStatus,

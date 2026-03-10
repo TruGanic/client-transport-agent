@@ -34,7 +34,10 @@ export default function HarvestingScreen() {
   const [qrTarget, setQRTarget] = useState<QRTarget>(null);
   const [pickupLocation, setPickupLocation] = useState<string>("");
   const [isLocating, setIsLocating] = useState(false);
-  const [invoiceFile, setInvoiceFile] = useState<{ uri: string; name: string } | null>(null);
+  const [invoiceFile, setInvoiceFile] = useState<{
+    uri: string;
+    name: string;
+  } | null>(null);
   const { setActiveBatchId } = useTripManager();
 
   const {
@@ -69,7 +72,10 @@ export default function HarvestingScreen() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission Denied", "Location access is needed to auto-detect pickup location.");
+        Alert.alert(
+          "Permission Denied",
+          "Location access is needed to auto-detect pickup location.",
+        );
         return;
       }
 
@@ -85,10 +91,13 @@ export default function HarvestingScreen() {
 
       let locationStr: string;
       if (address) {
-        const parts = [address.street, address.city, address.region].filter(Boolean);
-        locationStr = parts.length > 0
-          ? parts.join(", ")
-          : `${location.coords.latitude.toFixed(6)}, ${location.coords.longitude.toFixed(6)}`;
+        const parts = [address.street, address.city, address.region].filter(
+          Boolean,
+        );
+        locationStr =
+          parts.length > 0
+            ? parts.join(", ")
+            : `${location.coords.latitude.toFixed(6)}, ${location.coords.longitude.toFixed(6)}`;
       } else {
         locationStr = `${location.coords.latitude.toFixed(6)}, ${location.coords.longitude.toFixed(6)}`;
       }
@@ -127,7 +136,10 @@ export default function HarvestingScreen() {
   const onSave = async (data: HarvestFormValues) => {
     // Validate location
     if (!pickupLocation) {
-      Alert.alert("Location Required", "Please get your current location before submitting.");
+      Alert.alert(
+        "Location Required",
+        "Please get your current location before submitting.",
+      );
       return;
     }
 
@@ -149,7 +161,10 @@ export default function HarvestingScreen() {
       if (result.synced) {
         Alert.alert("Success", `Batch ${data.batchId} synced to backend! 🔗`);
       } else {
-        Alert.alert("Saved Offline", `Batch ${data.batchId} saved locally. Queued for sync. 💾`);
+        Alert.alert(
+          "Saved Offline",
+          `Batch ${data.batchId} saved locally. Queued for sync. 💾`,
+        );
       }
 
       setActiveBatchId(data.batchId);
@@ -187,7 +202,12 @@ export default function HarvestingScreen() {
           errors[name] ? "border-red-500" : "border-gray-200",
         )}
       >
-        <Ionicons name={icon} size={20} color={Colors.textSecondary} style={{ marginRight: 10 }} />
+        <Ionicons
+          name={icon}
+          size={20}
+          color={Colors.textSecondary}
+          style={{ marginRight: 10 }}
+        />
         <Controller
           control={control}
           name={name}
@@ -234,7 +254,12 @@ export default function HarvestingScreen() {
           errors[name] ? "border-red-500" : "border-gray-200",
         )}
       >
-        <Ionicons name={icon} size={20} color={Colors.textSecondary} style={{ marginRight: 8 }} />
+        <Ionicons
+          name={icon}
+          size={20}
+          color={Colors.textSecondary}
+          style={{ marginRight: 8 }}
+        />
         <Controller
           control={control}
           name={name}
@@ -286,11 +311,18 @@ export default function HarvestingScreen() {
         onClose={() => setQRTarget(null)}
       />
 
-      <ScrollView className="flex-1 px-5 py-6" contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView
+        className="flex-1 px-5 py-6"
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* Header */}
         <View className="mb-6">
-          <Text className="text-2xl font-bold text-gray-900">New Harvest Collection</Text>
-          <Text className="text-gray-500 mt-1">Enter batch details for tracking.</Text>
+          <Text className="text-2xl font-bold text-gray-900">
+            New Harvest Collection
+          </Text>
+          <Text className="text-gray-500 mt-1">
+            Enter batch details for tracking.
+          </Text>
         </View>
 
         {/* QR Quick Actions */}
@@ -301,7 +333,9 @@ export default function HarvestingScreen() {
             activeOpacity={0.7}
           >
             <Ionicons name="qr-code" size={20} color={Colors.primary} />
-            <Text className="text-green-700 font-semibold ml-2 text-sm">Scan Farm QR</Text>
+            <Text className="text-green-700 font-semibold ml-2 text-sm">
+              Scan Farm QR
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -310,17 +344,22 @@ export default function HarvestingScreen() {
             activeOpacity={0.7}
           >
             <Ionicons name="barcode" size={20} color="#1D4ED8" />
-            <Text className="text-blue-700 font-semibold ml-2 text-sm">Scan Batch QR</Text>
+            <Text className="text-blue-700 font-semibold ml-2 text-sm">
+              Scan Batch QR
+            </Text>
           </TouchableOpacity>
         </View>
 
         {/* Form Card */}
         <View className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-
           {/* ── Identification Section ─── */}
           <View className="mb-2">
             <View className="flex-row items-center mb-3">
-              <Ionicons name="finger-print-outline" size={18} color={Colors.primary} />
+              <Ionicons
+                name="finger-print-outline"
+                size={18}
+                color={Colors.primary}
+              />
               <Text className="text-sm font-bold text-green-800 ml-2 uppercase tracking-wide">
                 Identification
               </Text>
@@ -382,45 +421,69 @@ export default function HarvestingScreen() {
             icon="clipboard-outline"
           />
 
-          {/* ── Pickup Location (GPS) ─── */}
+          {/* ── Pickup Location ─── */}
           <View className="mt-4 mb-2">
             <View className="flex-row items-center mb-3">
-              <Ionicons name="navigate-outline" size={18} color={Colors.primary} />
+              <Ionicons
+                name="navigate-outline"
+                size={18}
+                color={Colors.primary}
+              />
               <Text className="text-sm font-bold text-green-800 ml-2 uppercase tracking-wide">
                 Pickup Location
               </Text>
             </View>
           </View>
 
+          {/* Manual location input */}
+          <View
+            className={clsx(
+              "flex-row items-center bg-white border rounded-xl px-4 py-3 shadow-sm mb-2",
+              pickupLocation ? "border-green-300" : "border-gray-200",
+            )}
+          >
+            <Ionicons
+              name="location-outline"
+              size={20}
+              color={Colors.textSecondary}
+              style={{ marginRight: 10 }}
+            />
+            <TextInput
+              className="flex-1 text-gray-800 text-base"
+              placeholder="Enter location or use GPS"
+              placeholderTextColor="#9CA3AF"
+              value={pickupLocation}
+              onChangeText={setPickupLocation}
+            />
+            {pickupLocation ? (
+              <TouchableOpacity
+                onPress={() => setPickupLocation("")}
+                className="ml-2 p-1"
+              >
+                <Ionicons name="close-circle" size={20} color="#9CA3AF" />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+
+          {/* GPS auto-detect button */}
           <TouchableOpacity
             onPress={handleGetLocation}
             disabled={isLocating}
-            className={clsx(
-              "flex-row items-center border rounded-xl px-4 py-3 mb-2",
-              pickupLocation
-                ? "bg-green-50 border-green-200"
-                : "bg-gray-50 border-gray-200",
-            )}
+            className="flex-row items-center justify-center border border-green-200 bg-green-50 rounded-xl px-4 py-2.5 mb-2"
             activeOpacity={0.7}
           >
             {isLocating ? (
               <>
                 <ActivityIndicator size="small" color={Colors.primary} />
-                <Text className="text-gray-500 ml-3 text-base">Detecting location...</Text>
-              </>
-            ) : pickupLocation ? (
-              <>
-                <Ionicons name="checkmark-circle" size={22} color={Colors.primary} />
-                <Text className="text-gray-800 ml-3 text-base flex-1" numberOfLines={2}>
-                  {pickupLocation}
+                <Text className="text-gray-500 ml-2 text-sm">
+                  Detecting location...
                 </Text>
-                <Ionicons name="refresh-outline" size={20} color={Colors.textSecondary} />
               </>
             ) : (
               <>
-                <Ionicons name="location-outline" size={22} color={Colors.primary} />
-                <Text className="text-green-700 font-semibold ml-3 text-base">
-                  Get Current Location
+                <Ionicons name="navigate" size={18} color={Colors.primary} />
+                <Text className="text-green-700 font-semibold ml-2 text-sm">
+                  {pickupLocation ? "Re-detect via GPS" : "Auto-detect via GPS"}
                 </Text>
               </>
             )}
@@ -429,7 +492,11 @@ export default function HarvestingScreen() {
           {/* ── Invoice Upload (Optional) ─── */}
           <View className="mt-4 mb-2">
             <View className="flex-row items-center mb-3">
-              <Ionicons name="document-attach-outline" size={18} color={Colors.primary} />
+              <Ionicons
+                name="document-attach-outline"
+                size={18}
+                color={Colors.primary}
+              />
               <Text className="text-sm font-bold text-green-800 ml-2 uppercase tracking-wide">
                 Invoice (Optional)
               </Text>
@@ -451,10 +518,15 @@ export default function HarvestingScreen() {
                   </View>
                 )}
                 <View className="flex-1">
-                  <Text className="text-gray-800 font-medium text-sm" numberOfLines={1}>
+                  <Text
+                    className="text-gray-800 font-medium text-sm"
+                    numberOfLines={1}
+                  >
                     {invoiceFile.name}
                   </Text>
-                  <Text className="text-gray-500 text-xs mt-1">Tap × to remove</Text>
+                  <Text className="text-gray-500 text-xs mt-1">
+                    Tap × to remove
+                  </Text>
                 </View>
                 <TouchableOpacity onPress={removeInvoice} className="p-2">
                   <Ionicons name="close-circle" size={24} color="#EF4444" />
@@ -467,7 +539,11 @@ export default function HarvestingScreen() {
               className="flex-row items-center justify-center border border-dashed border-gray-300 rounded-xl py-4"
               activeOpacity={0.7}
             >
-              <Ionicons name="cloud-upload-outline" size={22} color={Colors.textSecondary} />
+              <Ionicons
+                name="cloud-upload-outline"
+                size={22}
+                color={Colors.textSecondary}
+              />
               <Text className="text-gray-500 font-medium ml-2 text-sm">
                 Upload PDF, JPG, or PNG
               </Text>
@@ -494,14 +570,20 @@ export default function HarvestingScreen() {
                 color="white"
                 style={{ marginRight: 8 }}
               />
-              <Text className="text-white font-bold text-lg">Confirm Pickup</Text>
+              <Text className="text-white font-bold text-lg">
+                Confirm Pickup
+              </Text>
             </>
           )}
         </TouchableOpacity>
 
         {/* Sync Status Hint */}
         <View className="mt-6 flex-row justify-center items-center">
-          <Ionicons name="wifi-outline" size={16} color={Colors.textSecondary} />
+          <Ionicons
+            name="wifi-outline"
+            size={16}
+            color={Colors.textSecondary}
+          />
           <Text className="text-gray-500 text-xs ml-2">
             Auto-sync enabled for offline/online transitions.
           </Text>

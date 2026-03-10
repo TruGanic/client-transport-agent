@@ -75,7 +75,7 @@ export default function RootLayout() {
 
   return (
     <>
-      <Redirect href="/(main)" />
+      <Redirect href="/(main)/(tabs)" />
       <Slot />
     </>
   );

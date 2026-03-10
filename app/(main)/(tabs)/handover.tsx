@@ -1,17 +1,20 @@
 import HandoverInstructionsCarousel from "@/src/components/HandoverInstructionsCarousel";
 import { Colors } from "@/src/constants/theme";
+import { db } from "@/src/database/client";
+import { harvestBatches } from "@/src/database/schema";
 import { useTripManager } from "@/src/hooks/useTripManager";
 import { MerkleService } from "@/src/services/merkle.service";
 import { SyncService } from "@/src/services/sync.service";
 import { Ionicons } from "@expo/vector-icons";
+import { eq } from "drizzle-orm";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function HandoverScreen() {
@@ -24,6 +27,7 @@ export default function HandoverScreen() {
     tripEndTime,
     activeBatchId,
     clearTripData,
+    clearBatchData,
   } = useTripManager();
   const [step, setStep] = useState(1); // 1: Trip Active/Summary, 2: QR Scan, 3: Completed
   const [loading, setLoading] = useState(false);
@@ -68,6 +72,34 @@ export default function HandoverScreen() {
     console.log("========================================");
     console.log("🚀 [Handover] PROCEED TO HANDOVER pressed");
     console.log(`📦 [Handover] Active Batch ID: ${activeBatchId}`);
+
+    // Verify batch exists in local DB before proceeding
+    try {
+      const batchRecords = await db
+        .select()
+        .from(harvestBatches)
+        .where(eq(harvestBatches.batchId, activeBatchId));
+
+      if (!batchRecords || batchRecords.length === 0) {
+        console.error(
+          `❌ [Handover] Batch ${activeBatchId} not found in harvest_batches DB`,
+        );
+        Alert.alert(
+          "No Active Batch",
+          "The batch record was not found in the local database. Please create a pickup first.",
+        );
+        setLoading(false);
+        return;
+      }
+      console.log(
+        `✅ [Handover] Batch ${activeBatchId} verified in DB (syncStatus: ${batchRecords[0].syncStatus})`,
+      );
+    } catch (dbError: any) {
+      console.error("❌ [Handover] DB check failed:", dbError.message);
+      Alert.alert("Error", "Failed to verify batch record. Please try again.");
+      setLoading(false);
+      return;
+    }
 
     try {
       // 1. Generate Merkle Proof & Stats using proper trip time range
@@ -125,8 +157,11 @@ export default function HandoverScreen() {
   // ─── CONFIRM HANDOVER: Physical custody transfer confirmed ──────────
   const handleConfirmHandover = () => {
     console.log(
-      "✅ [Handover] CONFIRM HANDOVER pressed — preserving trip data",
+      "✅ [Handover] CONFIRM HANDOVER pressed — clearing batch data, preserving sensor data",
     );
+    // Clear only batch-specific state (activeBatchId, times, logs)
+    // Sensor buffers (currentBuffer, currentHumidityBuffer) are preserved
+    clearBatchData();
     setStep(3);
   };
 
